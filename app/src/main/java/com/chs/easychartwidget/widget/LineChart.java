@@ -7,7 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -94,7 +94,6 @@ public class LineChart extends View {
      * 当前移动的距离
      */
     private float movingThisTime = 0.0f;
-    private GestureDetector mGestureListener;
     public LineChart(Context context) {
         super(context);
         init(context);
@@ -145,7 +144,7 @@ public class LineChart extends View {
         mTotalHeight = getMeasuredHeight();
         setNeedHeight();
         leftWhiteRect = new Rect(0, 0, 0, mTotalHeight);
-        rightWhiteRect = new Rect(mTotalWidth - leftMargin * 2 - 10, 0, mTotalWidth, mTotalHeight);
+        rightWhiteRect = new Rect(mTotalWidth - leftMargin * 2, 0, mTotalWidth, mTotalHeight);
         topWhiteRect = new Rect(0, 0, mTotalWidth, topMargin / 2);
         bottomWhiteRect = new Rect(0, (int) yStartIndex, mTotalWidth, mTotalHeight);
         super.onSizeChanged(w, h, oldw, oldh);
@@ -182,55 +181,74 @@ public class LineChart extends View {
         checkTheLeftMoving();
         canvas.drawRect(bottomWhiteRect, bgPaint);
         canvas.drawRect(topWhiteRect, bgPaint);
-        //画X轴的text 和 线的路径
-        drawXAxis(canvas);
+        //画中间的白线
+        drawWhiteLine(canvas);
+        //画线形图
+        drawLines(canvas);
         //画线型图
-        canvas.drawPath(linePath, linePaint);
-        //画线上的点
-        drawCircles(canvas);
-        //画X轴 下面的和上面
-        canvas.drawLine(xStartIndex, yStartIndex, mTotalWidth - leftMargin, yStartIndex, axisPaint);
-        canvas.drawLine(xStartIndex, topMargin / 2, mTotalWidth - leftMargin, topMargin / 2, axisPaint);
 
         //画左边和右边的遮罩层
         leftWhiteRect.right = (int) xStartIndex;
         canvas.drawRect(leftWhiteRect, bgPaint);
         canvas.drawRect(rightWhiteRect, bgPaint);
-
+        //画线上的点
+        drawCircles(canvas);
         //画左边的Y轴
         canvas.drawLine(xStartIndex, yStartIndex, xStartIndex, topMargin / 2, axisPaint);
-        //画左边的Y轴text
-        drawLeftYAxis(canvas);
         //左边Y轴的单位
         canvas.drawText(leftAxisUnit, xStartIndex, topMargin / 2 - 14, textPaint);
         //画右边的Y轴
-        canvas.drawLine(mTotalWidth - leftMargin * 2 - 10, yStartIndex, mTotalWidth - leftMargin * 2 - 10, topMargin / 2, axisPaint);
-
+        canvas.drawLine(mTotalWidth - leftMargin * 2, yStartIndex, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+        //画左边的Y轴text
+        drawLeftYAxis(canvas);
+        //画X轴 下面的和上面
+        canvas.drawLine(xStartIndex, yStartIndex, mTotalWidth - leftMargin*2, yStartIndex, axisPaint);
+        canvas.drawLine(xStartIndex, topMargin / 2, mTotalWidth - leftMargin*2, topMargin / 2, axisPaint);
+        //画X轴的text
+        drawXAxisText(canvas);
     }
 
-    private void drawXAxis(Canvas canvas) {
+    private void drawXAxisText(Canvas canvas) {
+        float distance = 0;
+        for(int i = 0;i<mData.size();i++){
+            distance = space*i- leftMoving;
+            String text = mData.get(i).getxLabel();
+            //当在可见的范围内才绘制
+            if((xStartIndex+distance)>=xStartIndex&&(xStartIndex+distance)<(mTotalWidth-leftMargin*2)){
+                canvas.drawText(text, xStartIndex+distance-textPaint.measureText(text)/2, paintBottom + DensityUtil.dip2px(getContext(), 10), textPaint);
+            }
+        }
+    }
+
+    private void drawWhiteLine(Canvas canvas) {
+        axisPaint.setColor(Color.WHITE);
+        float eachHeight = ((paintBottom - topMargin / 2) / 5f);
+        for (int i = 1; i <= 5; i++) {
+            float startY = paintBottom - eachHeight * i;
+            if (startY < topMargin / 2) {
+                break;
+            }
+            canvas.drawLine(xStartIndex, startY, mTotalWidth - leftMargin*2, startY, axisPaint);
+        }
+        axisPaint.setColor(Color.BLACK);
+    }
+
+    /**
+     * 画线形图
+     */
+    private void drawLines(Canvas canvas) {
         float distance = 0;
         for(int i = 0;i<mData.size();i++){
             distance = space*i- leftMoving;
             linePoints.add((int) (xStartIndex+distance));
-            String text = mData.get(i).getxLabel();
-            canvas.drawText(text, xStartIndex+distance, paintBottom + DensityUtil.dip2px(getContext(), 10), textPaint);
-            //确定线形图的路径 和 画圆点
-            drawLines(i,distance);
-        }
-    }
-    /**
-     * 画线形图的路径
-     *
-     * @param i
-     */
-    private void drawLines(int i,float distance) {
             float lineHeight = mData.get(i).getyValue() * maxHeight / maxDivisionValue;
             if (i == 0) {
                 linePath.moveTo(xStartIndex + distance, paintBottom - lineHeight);
             } else {
                 linePath.lineTo(xStartIndex + distance, paintBottom - lineHeight);
             }
+        }
+        canvas.drawPath(linePath, linePaint);
     }
     /**
      * 画线上的点
@@ -238,7 +256,10 @@ public class LineChart extends View {
     private void drawCircles(Canvas canvas) {
         for (int i = 0; i < mData.size(); i++) {
                 pointPaint.setColor(Color.parseColor("#EF6868"));
-            canvas.drawCircle(linePoints.get(i), paintBottom - mData.get(i).getyValue() * maxHeight / maxDivisionValue, RADIUS, pointPaint);
+            //只有在可见的范围内才绘制
+            if(linePoints.get(i)>=xStartIndex&&linePoints.get(i)<(mTotalWidth-leftMargin*2)){
+                canvas.drawCircle(linePoints.get(i), paintBottom - mData.get(i).getyValue() * maxHeight / maxDivisionValue, RADIUS, pointPaint);
+            }
         }
     }
     /**
@@ -255,7 +276,7 @@ public class LineChart extends View {
                 if (startY < topMargin / 2) {
                     break;
                 }
-                canvas.drawLine(xStartIndex, startY, xStartIndex + 10, startY, axisPaint);
+//                canvas.drawLine(xStartIndex, startY, mTotalWidth - leftMargin*2, startY, axisPaint);
                 BigDecimal maxValue = new BigDecimal(maxDivisionValue);
                 BigDecimal fen = new BigDecimal(0.2 * i);
                 long textValue = maxValue.multiply(fen).longValue();
@@ -268,7 +289,7 @@ public class LineChart extends View {
                 if (startY < topMargin / 2) {
                     break;
                 }
-                canvas.drawLine(xStartIndex, startY, xStartIndex + 10, startY, axisPaint);
+//                canvas.drawLine(xStartIndex, startY, mTotalWidth - leftMargin*2, startY, axisPaint);
                 float textValue = numMathMul(maxDivisionValue, (float) (0.2 * i));
                 String text = String.valueOf(textValue);
                 canvas.drawText(text, xStartIndex - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
@@ -276,7 +297,7 @@ public class LineChart extends View {
         } else {
             for (int i = 1; i <= 5; i++) {
                 float startY = paintBottom - eachHeight * i;
-                canvas.drawLine(xStartIndex, startY, xStartIndex + 10, startY, axisPaint);
+                //                canvas.drawLine(xStartIndex, startY, mTotalWidth - leftMargin*2, startY, axisPaint);
                 String text = String.valueOf(10 * i);
                 canvas.drawText(text, xStartIndex - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
             }
@@ -330,7 +351,7 @@ public class LineChart extends View {
     private void getItemsWidth() {
         space = DensityUtil.dip2px(getContext(), 30);
         maxRight = (int) (xStartIndex + space * mData.size());
-        minRight = mTotalWidth - space - leftMargin;
+        minRight = mTotalWidth - leftMargin*2;
     }
 
     public void setData(List<ChartEntity> list) {
@@ -478,6 +499,25 @@ public class LineChart extends View {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 启动和关闭硬件加速   在绘制View的时候支持硬件加速,充分利用GPU的特性,使得绘制更加平滑,但是会多消耗一些内存。
+     *
+     * @param enabled
+     */
+    public void setHardwareAccelerationEnabled(boolean enabled) {
+
+        if (android.os.Build.VERSION.SDK_INT >= 11) {
+
+            if (enabled)
+                setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            else
+                setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        } else {
+            Log.e("error",
+                    "Cannot enable/disable hardware acceleration for devices below API level 11.");
         }
     }
 }
