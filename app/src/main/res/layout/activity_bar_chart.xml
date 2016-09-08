@@ -9,14 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     >
 
-    <Button
-        android:id="@+id/btn_line_chart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="线型图"/>
-    <Button
-        android:id="@+id/btn_bar_chart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="柱型图"/>
+    <com.chs.easychartwidget.widget.BarChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
