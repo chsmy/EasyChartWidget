@@ -8,3 +8,6 @@
 另外MPChart的源码注释真不多
 
 EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一个图表一个类。注释详细。拿到类后可以尽情的根据自己的需求更改
+效果图：
+![](https://github.com/chsmy/EasyChartWidget/blob/master/images/180.gif)
+![](https://github.com/chsmy/EasyChartWidget/blob/master/images/181.gif)
