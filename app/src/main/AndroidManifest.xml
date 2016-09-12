@@ -17,6 +17,7 @@
         </activity>
         <activity android:name=".activity.LineChartActivity"/>
         <activity android:name=".activity.BarChartActivity"/>
+        <activity android:name=".activity.PieChartActivity"/>
     </application>
 
 </manifest>

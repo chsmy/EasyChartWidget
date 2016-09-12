@@ -142,8 +142,8 @@ public class LineChart extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mTotalWidth = getMeasuredWidth();
-        mTotalHeight = getMeasuredHeight();
+        mTotalWidth = w - getPaddingLeft() - getPaddingRight();
+        mTotalHeight = h - getPaddingTop() - getPaddingBottom();
         setNeedHeight();
         leftWhiteRect = new Rect(0, 0, 0, mTotalHeight);
         rightWhiteRect = new Rect(mTotalWidth - leftMargin * 2, 0, mTotalWidth, mTotalHeight);
