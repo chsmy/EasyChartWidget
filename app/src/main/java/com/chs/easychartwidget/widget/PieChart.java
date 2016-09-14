@@ -7,9 +7,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.chs.easychartwidget.entity.PieDataEntity;
+import com.chs.easychartwidget.utils.CalculateUtil;
 
 import java.util.List;
 
@@ -120,10 +122,13 @@ public class PieChart extends View {
             startAngle += sweepAngle+1;
             //绘制线和文本
             canvas.drawLine(pxs,pys,pxt,pyt,mLinePaint);
+            float res = mDataList.get(i).getValue() / mTotalValue * 100;
+            double resToRound = CalculateUtil.round(res,2);
+            float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
-                canvas.drawText(mDataList.get(i).getName(),pxt-mTextPaint.measureText(mDataList.get(i).getName()),pyt,mTextPaint);
+                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%"),pyt,mTextPaint);
             }else {
-                canvas.drawText(mDataList.get(i).getName(),pxt,pyt,mTextPaint);
+                canvas.drawText(resToRound+"%",pxt,pyt,mTextPaint);
             }
         }
     }
@@ -135,5 +140,30 @@ public class PieChart extends View {
             mTotalValue +=pieData.getValue();
         }
         invalidate();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                float x = event.getX()-(mTotalWidth/2);
+                float y = event.getY()-(mTotalHeight/2);
+                float touchAngle = 0;
+                if (x<0&&y<0){
+                    touchAngle += 180;
+                }else if (y<0&&x>0){
+                    touchAngle += 360;
+                }else if (y>0&&x<0){
+                    touchAngle += 180;
+                }
+                touchAngle +=Math.toDegrees(Math.atan(y/x));
+//                touchAngle = touchAngle-mPieAxisData.getStartAngle();
+                if (touchAngle<0){
+                    touchAngle = touchAngle+360;
+                }
+                float touchRadius = (float) Math.sqrt(y*y+x*x);
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }
