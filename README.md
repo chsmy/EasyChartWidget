@@ -13,3 +13,4 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
 
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/180.gif)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/181.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)
