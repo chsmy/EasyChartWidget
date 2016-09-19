@@ -3,6 +3,7 @@ package com.chs.easychartwidget.activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.chs.easychartwidget.R;
 import com.chs.easychartwidget.entity.PieDataEntity;
@@ -29,5 +30,12 @@ public class PieChartActivity extends AppCompatActivity {
             dataEntities.add(entity);
         }
         pieChart.setDataList(dataEntities);
+
+        pieChart.setOnItemPieClickListener(new PieChart.OnItemPieClickListener() {
+            @Override
+            public void onClick(int position) {
+                Toast.makeText(PieChartActivity.this,"点击了"+position,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
