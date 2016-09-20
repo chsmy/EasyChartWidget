@@ -7,10 +7,18 @@
 
 另外MPChart的源码注释真不多
 
-EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一个图表一个类。注释详细。拿到类后可以尽情的根据自己的需求更改
+EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一个图表一个类。注释详细。拿到类后可以尽情的根据自己的需求更改,以后图表种类还会增加。
 
 效果图：
 
+ [手撸一个Android线形图表](http://blog.csdn.net/mingyunxiaohai/article/details/52461774)
+ 
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/180.gif)
+ 
+ [手撸一个Android柱状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52471358)
+ 
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/181.gif)
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)
+ 
+ [手撸一个Android饼状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52597823)
+ 
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)![](https://github.com/chsmy/EasyChartWidget/blob/master/images/185.png)

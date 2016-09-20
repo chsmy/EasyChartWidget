@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -55,6 +56,9 @@ public class PieChart extends View {
      * 手点击的部分的position
      */
     private int position = -1;
+    /**
+     * 点击监听
+     */
     private OnItemPieClickListener mOnItemPieClickListener;
 
     public void setOnItemPieClickListener(OnItemPieClickListener onItemPieClickListener) {
@@ -128,7 +132,6 @@ public class PieChart extends View {
         canvas.translate(mTotalWidth/2,mTotalHeight/2);
         //绘制饼图的每块区域
         drawPiePath(canvas);
-
     }
 
     /**
@@ -148,7 +151,9 @@ public class PieChart extends View {
             }
             mPaint.setColor(mDataList.get(i).getColor());
             canvas.drawPath(mPath,mPaint);
+            canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
             mPath.reset();
+            Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
             float pxs = (float) (mRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pys = (float) (mRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxt = (float) ((mRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
@@ -158,6 +163,7 @@ public class PieChart extends View {
             //绘制线和文本
             canvas.drawLine(pxs,pys,pxt,pyt,mLinePaint);
             float res = mDataList.get(i).getValue() / mTotalValue * 100;
+            //提供精确的小数位四舍五入处理。
             double resToRound = CalculateUtil.round(res,2);
             float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
@@ -193,7 +199,6 @@ public class PieChart extends View {
                     touchAngle += 180;
                 }
                 touchAngle +=Math.toDegrees(Math.atan(y/x));
-//                touchAngle = touchAngle-mPieAxisData.getStartAngle();
                 if (touchAngle<0){
                     touchAngle = touchAngle+360;
                 }
