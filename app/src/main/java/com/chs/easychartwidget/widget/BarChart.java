@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * 作者：chs on 2016/9/8 09:46
  * 邮箱：657083984@qq.com
+ * 柱形图表
  */
 public class BarChart extends View {
     private Context mContext;

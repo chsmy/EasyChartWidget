@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * 作者：chs on 2016/9/6 14:17
  * 邮箱：657083984@qq.com
+ * 线形图表
  */
 public class LineChart extends View {
     private Context mContext;

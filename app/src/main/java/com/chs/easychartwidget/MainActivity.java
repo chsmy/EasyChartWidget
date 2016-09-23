@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.chs.easychartwidget.activity.BarChartActivity;
+import com.chs.easychartwidget.activity.HollowPieChartActivity;
 import com.chs.easychartwidget.activity.LineChartActivity;
 import com.chs.easychartwidget.activity.PieChartActivity;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_line_chart).setOnClickListener(this);
         findViewById(R.id.btn_bar_chart).setOnClickListener(this);
         findViewById(R.id.btn_path).setOnClickListener(this);
+        findViewById(R.id.btn_path_pie).setOnClickListener(this);
     }
 
     @Override
@@ -38,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_path:
                 intent = new Intent(this, PieChartActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btn_path_pie:
+                intent = new Intent(this, HollowPieChartActivity.class);
                 startActivity(intent);
                 break;
         }
