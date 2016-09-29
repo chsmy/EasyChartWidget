@@ -19,6 +19,7 @@
         <activity android:name=".activity.BarChartActivity"/>
         <activity android:name=".activity.PieChartActivity"/>
         <activity android:name=".activity.HollowPieChartActivity"/>
+        <activity android:name=".activity.ScaleActivity"/>
     </application>
 
 </manifest>

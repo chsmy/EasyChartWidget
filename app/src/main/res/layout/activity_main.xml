@@ -30,4 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="空心的饼状图"/>
+    <Button
+        android:id="@+id/btn_scale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="直线比例"/>
 </LinearLayout>
