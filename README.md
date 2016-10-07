@@ -23,6 +23,6 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)![](https://github.com/chsmy/EasyChartWidget/blob/master/images/185.gif)
 
- 环形饼装图
+ 环形饼装图（这个是直接将画笔的宽度放大，方法有点偷懒）
 
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/188.png)
