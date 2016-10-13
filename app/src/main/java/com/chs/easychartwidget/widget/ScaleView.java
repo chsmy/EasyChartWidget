@@ -91,17 +91,17 @@ public class ScaleView extends View {
         mRect1.right = (int) (mWidth*scale1);
         float scale2 = 0;
         for (int j = 0; j < scales.length - 1; j++) {
-            scale2 += scales[j];
+            scale2 += scales[j+1];
         }
         mRect2.right = (int) (mWidth*scale2);
         float scale3 = 0;
         for (int j = 0; j < scales.length - 2; j++) {
-            scale3 += scales[j];
+            scale3 += scales[j+2];
         }
         mRect3.right = (int) (mWidth*scale3);
         float scale4 = 0;
         for (int j = 0; j < scales.length - 3; j++) {
-            scale4 += scales[j];
+            scale4 += scales[j+3];
         }
         mRect4.right = (int) (mWidth*scale4);
         invalidate();

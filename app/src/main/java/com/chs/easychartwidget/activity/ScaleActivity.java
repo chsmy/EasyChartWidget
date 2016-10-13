@@ -18,6 +18,7 @@ public class ScaleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scale);
         ScaleView scaleView = (ScaleView) findViewById(R.id.scale_view);
+        //实际显示是跟传入的数值反序
         scaleView.setScales(new double[]{0.4, 0.3, 0.15, 0.15});
     }
 }
