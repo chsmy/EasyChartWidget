@@ -151,10 +151,12 @@ public class PieChart extends View {
                 mPath.arcTo(mRectF,startAngle,sweepAngle);
             }
             mPaint.setColor(mDataList.get(i).getColor());
-            canvas.drawPath(mPath,mPaint);
+            //*******下面的两句话选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
+//            canvas.drawPath(mPath,mPaint);
             canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
             mPath.reset();
             Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
+            //确定直线的起始和结束的点的位置
             float pxs = (float) (mRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pys = (float) (mRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxt = (float) ((mRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));

@@ -152,6 +152,7 @@ public class HollowPieChart extends View {
             }
 //            canvas.drawPath(mPath,mPaint);
             Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
+            //确定直线的起始和结束的点的位置
             float pxs = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pys = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
