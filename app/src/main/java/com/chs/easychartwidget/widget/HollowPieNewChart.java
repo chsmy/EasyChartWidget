@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.view.View;
 
 import com.chs.easychartwidget.entity.PieDataEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
+import com.chs.easychartwidget.utils.DensityUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,25 +20,24 @@ import java.util.List;
 /**
  * 作者：chs on 2016/9/8 16:25
  * 邮箱：657083984@qq.com
- * 饼状图表
+ * 空心的饼状图表
  */
-public class PieChart extends View {
+public class HollowPieNewChart extends View {
     /**
      * 视图的宽和高
      */
     private int mTotalWidth, mTotalHeight;
     /**
-     * 绘制区域的半径
+     * 绘制区域的圆的半径
      */
-    private float mRadius;
+    private float mOutRadius;
 
     private Paint mPaint,mLinePaint,mTextPaint;
 
-    private Path mPath;
     /**
      * 扇形的绘制区域
      */
-    private RectF mRectF;
+    private RectF mOutRectF;
     /**
      * 点击之后的扇形的绘制区域
      */
@@ -69,23 +68,23 @@ public class PieChart extends View {
     public interface OnItemPieClickListener {
         void onClick(int position);
     }
-    public PieChart(Context context) {
+    public HollowPieNewChart(Context context) {
         super(context);
         init(context);
     }
 
-    public PieChart(Context context, AttributeSet attrs) {
+    public HollowPieNewChart(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public PieChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public HollowPieNewChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
     private void init(Context context) {
-        mRectF = new RectF();
+        mOutRectF = new RectF();
         mRectFTouch = new RectF();
 
         mPaint = new Paint();
@@ -103,7 +102,6 @@ public class PieChart extends View {
         mTextPaint.setStyle(Paint.Style.FILL);
         mTextPaint.setTextSize(24);
 
-        mPath = new Path();
     }
 
     @Override
@@ -112,17 +110,17 @@ public class PieChart extends View {
         mTotalWidth = w - getPaddingLeft() - getPaddingRight();
         mTotalHeight = h - getPaddingTop() - getPaddingBottom();
 
-        mRadius = (float) (Math.min(mTotalWidth,mTotalHeight)/2*0.7);
+        mOutRadius = (float) (Math.min(mTotalWidth,mTotalHeight)/2*0.7);
 
-        mRectF.left = -mRadius;
-        mRectF.top = -mRadius;
-        mRectF.right = mRadius;
-        mRectF.bottom = mRadius;
+        mOutRectF.left = -mOutRadius;
+        mOutRectF.top = -mOutRadius;
+        mOutRectF.right = mOutRadius;
+        mOutRectF.bottom = mOutRadius;
 
-        mRectFTouch.left = -mRadius-16;
-        mRectFTouch.top = -mRadius-16;
-        mRectFTouch.right = mRadius+16;
-        mRectFTouch.bottom = mRadius+16;
+        mRectFTouch.left = -mOutRadius-16;
+        mRectFTouch.top = -mOutRadius-16;
+        mRectFTouch.right = mOutRadius+16;
+        mRectFTouch.bottom = mOutRadius+16;
     }
 
     @Override
@@ -144,28 +142,25 @@ public class PieChart extends View {
         float startAngle = 0;
         for(int i = 0;i<mDataList.size();i++){
             float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
-            mPaint.setColor(mDataList.get(i).getColor());
-            //*******下面的两种方法选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
 //            mPath.moveTo(0,0);
-//            if(position-1==i){
-//                mPath.arcTo(mRectFTouch,startAngle,sweepAngle);
-//            }else {
-//                mPath.arcTo(mRectF,startAngle,sweepAngle);
-//            }
-//            canvas.drawPath(mPath,mPaint);
-//            mPath.reset();
-//            canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
+            mPaint.setColor(mDataList.get(i).getColor());
             if(position-1==i){
                 canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
             }else {
-                canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
+                canvas.drawArc(mOutRectF,startAngle,sweepAngle,true,mPaint);
             }
+//            canvas.drawPath(mPath,mPaint);
             Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
             //确定直线的起始和结束的点的位置
-            float pxs = (float) (mRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-            float pys = (float) (mRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
-            float pxt = (float) ((mRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-            float pyt = (float) ((mRadius+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+//            float pxs = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
+//            float pys = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+//            float pxt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
+//            float pyt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+            float pxs = (float) (mOutRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
+            float pys = (float) (mOutRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+            float pxt = (float) ((mOutRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
+            float pyt = (float) ((mOutRadius+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+
             angles[i] = startAngle;
             startAngle += sweepAngle+1;
             //绘制线和文本
@@ -180,7 +175,11 @@ public class PieChart extends View {
                 canvas.drawText(resToRound+"%",pxt,pyt,mTextPaint);
             }
         }
-
+        mPaint.setColor(Color.WHITE);
+        mPaint.setAlpha(40);
+        canvas.drawCircle(0, 0, mOutRadius / 2 + DensityUtil.dip2px(getContext(),10), mPaint);
+        mPaint.setAlpha(255);
+        canvas.drawCircle(0, 0, mOutRadius / 2, mPaint);
     }
 
     public void setDataList(List<PieDataEntity> dataList){
@@ -214,7 +213,8 @@ public class PieChart extends View {
                     touchAngle = touchAngle+360;
                 }
                 float touchRadius = (float) Math.sqrt(y*y+x*x);
-                if (touchRadius< mRadius){
+                if (touchRadius< mOutRadius){
+                    if(angles!=null)
                     position = -Arrays.binarySearch(angles,(touchAngle))-1;
                     invalidate();
                     if(mOnItemPieClickListener!=null){

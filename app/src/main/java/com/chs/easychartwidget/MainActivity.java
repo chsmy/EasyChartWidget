@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.chs.easychartwidget.activity.BarChartActivity;
 import com.chs.easychartwidget.activity.HollowPieChartActivity;
+import com.chs.easychartwidget.activity.HollowPieChartNewActivity;
 import com.chs.easychartwidget.activity.LineChartActivity;
 import com.chs.easychartwidget.activity.PieChartActivity;
 import com.chs.easychartwidget.activity.ScaleActivity;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_path).setOnClickListener(this);
         findViewById(R.id.btn_path_pie).setOnClickListener(this);
         findViewById(R.id.btn_scale).setOnClickListener(this);
+        findViewById(R.id.btn_path_pie_hollow).setOnClickListener(this);
     }
 
     @Override
@@ -46,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_path_pie:
                 intent = new Intent(this, HollowPieChartActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btn_path_pie_hollow:
+                intent = new Intent(this, HollowPieChartNewActivity.class);
                 startActivity(intent);
                 break;
             case R.id.btn_scale:
