@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -262,6 +263,7 @@ public class BarChart extends View {
         mBarLeftXPoints.clear();
         mBarRightXPoints.clear();
         mBarRect.bottom = mTotalHeight - topMargin / 2;
+        Log.i("StartIndex","xStartIndex"+xStartIndex+"barWidth:"+barWidth+"barSpace"+barSpace+"leftMoving"+leftMoving);
         for (int i = 0; i < mData.size(); i++) {
             mBarRect.left = (int) (xStartIndex + barWidth * i + barSpace * (i + 1) - leftMoving);
             mBarRect.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(i).getyValue() / maxValueInItems));
@@ -283,12 +285,11 @@ public class BarChart extends View {
      * 检查向左滑动的距离 确保没有画出屏幕
      */
     private void checkTheLeftMoving() {
-        if (leftMoving < 0) {
-            leftMoving = 0;
-        }
-
         if (leftMoving > (maxRight - minRight)) {
             leftMoving = maxRight - minRight;
+        }
+        if (leftMoving < 0) {
+            leftMoving = 0;
         }
     }
 
@@ -305,6 +306,8 @@ public class BarChart extends View {
             barWidth = barMinWidth;
             barSpace = barMinSpace;
         }
+//        barWidth = DensityUtil.dip2px(getContext(), 20);
+//        barSpace = DensityUtil.dip2px(getContext(), 10);
         maxRight = (int) (xStartIndex + (barSpace + barWidth) * mData.size()) + barSpace * 2;
         minRight = mTotalWidth - barSpace - leftMargin;
     }
