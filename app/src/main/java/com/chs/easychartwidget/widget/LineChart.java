@@ -225,7 +225,7 @@ public class LineChart extends View {
 
     private void drawWhiteLine(Canvas canvas) {
         axisPaint.setColor(Color.WHITE);
-        float eachHeight = ((paintBottom - topMargin / 2) / 5f);
+        float eachHeight = (maxHeight/ 5f);
         for (int i = 1; i <= 5; i++) {
             float startY = paintBottom - eachHeight * i;
             if (startY < topMargin / 2) {
@@ -272,7 +272,7 @@ public class LineChart extends View {
      * @param canvas
      */
     private void drawLeftYAxis(Canvas canvas) {
-        float eachHeight = ((paintBottom - topMargin / 2) / 5f);
+        float eachHeight = (maxHeight / 5f);
         if (maxValueInItems > 1) {
             for (int i = 1; i <= 5; i++) {
                 float startY = paintBottom - eachHeight * i;
