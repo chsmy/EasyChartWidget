@@ -251,7 +251,7 @@ public class BarChart extends View {
         mBarRectClick.left = (int) (xStartIndex + barWidth * position + barSpace * (position + 1) - leftMoving);
         mBarRectClick.right = mBarRectClick.left + barWidth;
         mBarRectClick.bottom = mBarRect.bottom;
-        mBarRectClick.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(position).getyValue() / maxValueInItems));
+        mBarRectClick.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(position).getyValue() / maxDivisionValue));
     }
 
     /**
@@ -266,7 +266,7 @@ public class BarChart extends View {
         Log.i("StartIndex","xStartIndex"+xStartIndex+"barWidth:"+barWidth+"barSpace"+barSpace+"leftMoving"+leftMoving);
         for (int i = 0; i < mData.size(); i++) {
             mBarRect.left = (int) (xStartIndex + barWidth * i + barSpace * (i + 1) - leftMoving);
-            mBarRect.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(i).getyValue() / maxValueInItems));
+            mBarRect.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(i).getyValue() / maxDivisionValue));
             mBarRect.right = mBarRect.left + barWidth;
             mBarLeftXPoints.add(mBarRect.left);
             mBarRightXPoints.add(mBarRect.right);
@@ -314,7 +314,7 @@ public class BarChart extends View {
 
     private void drawWhiteLine(Canvas canvas) {
         axisPaint.setColor(Color.WHITE);
-        float eachHeight = ((paintBottom - topMargin / 2) / 5f);
+        float eachHeight = (maxHeight / 5f);
         for (int i = 1; i <= 5; i++) {
             float startY = paintBottom - eachHeight * i;
             if (startY < topMargin / 2) {
@@ -346,7 +346,7 @@ public class BarChart extends View {
      * @param canvas
      */
     private void drawLeftYAxis(Canvas canvas) {
-        float eachHeight = ((paintBottom - topMargin / 2) / 5f);
+        float eachHeight = (maxHeight / 5f);
         if (maxValueInItems > 1) {
             for (int i = 1; i <= 5; i++) {
                 float startY = paintBottom - eachHeight * i;
