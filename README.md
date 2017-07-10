@@ -22,6 +22,7 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
  [手撸一个Android饼状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52597823)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)![](https://github.com/chsmy/EasyChartWidget/blob/master/images/185.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/187.gif)
 
  [手撸一个Android饼状图表(环形饼状图)](http://blog.csdn.net/mingyunxiaohai/article/details/58072555)
 
