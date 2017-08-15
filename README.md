@@ -9,11 +9,12 @@
 
 EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一个图表一个类。注释详细。拿到类后可以尽情的根据自己的需求更改,以后图表种类还会增加。
 
-效果图：  （gif 录制工具录制的不清楚 现实中会很清楚的）
+**效果图：  （gif 录制工具录制的不清楚 现实中会很清楚的**
 
  [手撸一个Android线形图表](http://blog.csdn.net/mingyunxiaohai/article/details/52461774)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/180.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/1801.png)
  
  [手撸一个Android柱状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52471358)
  
