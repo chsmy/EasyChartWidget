@@ -368,6 +368,7 @@ public class BarChart extends View {
                 }
 //                canvas.drawLine(xStartIndex, startY, mTotalWidth - leftMargin*2, startY, axisPaint);
                 float textValue = CalculateUtil.numMathMul(maxDivisionValue, (float) (0.2 * i));
+//                BigDecimal textValues = CalculateUtil.mul(maxDivisionValue, (0.2 * i));
                 String text = String.valueOf(textValue);
                 canvas.drawText(text, xStartIndex - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
             }
