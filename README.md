@@ -13,24 +13,23 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
 
  [手撸一个Android线形图表](http://blog.csdn.net/mingyunxiaohai/article/details/52461774)
  
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/180.gif)
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/1801.png)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e1.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e11.jpg)
  
  [手撸一个Android柱状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52471358)
  
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/181.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e2.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e22.jpg)
  
  [手撸一个Android饼状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52597823)
  
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/182.png)![](https://github.com/chsmy/EasyChartWidget/blob/master/images/185.gif)
- 
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/187.png)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e3.gif)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e33.jpg)
 
  [手撸一个Android饼状图表(环形饼状图)](http://blog.csdn.net/mingyunxiaohai/article/details/58072555)
 
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/188.png)
- 
- ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/202.png)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e44.jpg)
+ ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e55.jpg)
  
  [ Android自定义View直线比例图](http://blog.csdn.net/mingyunxiaohai/article/details/52780953)
  

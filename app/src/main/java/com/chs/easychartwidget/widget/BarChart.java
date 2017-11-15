@@ -1,5 +1,7 @@
 package com.chs.easychartwidget.widget;
 
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,7 +11,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.Scroller;
 
 import com.chs.easychartwidget.entity.ChartEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
@@ -112,6 +118,18 @@ public class BarChart extends View {
      * 点击的地方
      */
     private int mClickPosition;
+    /**
+     * 速度跟踪器
+     */
+    private VelocityTracker velocityTracker;
+    /**
+     * 滑动
+     */
+    private Scroller scroller;
+    /**
+     * fling最大速度
+     */
+    private int maxVelocity;
 
     public void setOnItemBarClickListener(OnItemBarClickListener onRangeBarClickListener) {
         this.mOnItemBarClickListener = onRangeBarClickListener;
@@ -138,6 +156,8 @@ public class BarChart extends View {
 
     private void init(Context context) {
         setWillNotDraw(false);
+        scroller = new Scroller(context);
+        maxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
         mGestureListener = new GestureDetector(context, new RangeBarOnGestureListener());
         mContext = context;
         leftMargin = DensityUtil.dip2px(context, 16);
@@ -253,7 +273,21 @@ public class BarChart extends View {
         mBarRectClick.bottom = mBarRect.bottom;
         mBarRectClick.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(position).getyValue() / maxDivisionValue));
     }
-
+    private float percent = 1f;
+    private TimeInterpolator pointInterpolator = new DecelerateInterpolator();
+    public void startAnimation(int duration){
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(0,1);
+        mAnimator.setDuration(duration);
+        mAnimator.setInterpolator(pointInterpolator);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                percent = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        mAnimator.start();
+    }
     /**
      * 绘制柱形图
      *
@@ -266,7 +300,7 @@ public class BarChart extends View {
         Log.i("StartIndex","xStartIndex"+xStartIndex+"barWidth:"+barWidth+"barSpace"+barSpace+"leftMoving"+leftMoving);
         for (int i = 0; i < mData.size(); i++) {
             mBarRect.left = (int) (xStartIndex + barWidth * i + barSpace * (i + 1) - leftMoving);
-            mBarRect.top = (int) maxHeight + topMargin * 2 - (int) (maxHeight * (mData.get(i).getyValue() / maxDivisionValue));
+            mBarRect.top = (int) maxHeight + topMargin * 2 - (int)((maxHeight * (mData.get(i).getyValue() / maxDivisionValue))*percent);
             mBarRect.right = mBarRect.left + barWidth;
             mBarLeftXPoints.add(mBarRect.left);
             mBarRightXPoints.add(mBarRect.right);
@@ -398,12 +432,35 @@ public class BarChart extends View {
             }
         }
     }
-
+    private void initOrResetVelocityTracker() {
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain();
+        } else {
+            velocityTracker.clear();
+        }
+    }
+    private void recycleVelocityTracker() {
+        if (velocityTracker != null) {
+            velocityTracker.recycle();
+            velocityTracker = null;
+        }
+    }
+    @Override
+    public void computeScroll() {
+        if (scroller.computeScrollOffset()) {
+            movingThisTime = (scroller.getCurrX() - lastPointX);
+            leftMoving = leftMoving + movingThisTime;
+            lastPointX = scroller.getCurrX();
+            postInvalidate();
+        }
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastPointX = event.getRawX();
+                scroller.abortAnimation();//如果在滑动终止动画
+                initOrResetVelocityTracker();//初始化速度跟踪器
                 break;
             case MotionEvent.ACTION_MOVE:
                 float movex = event.getRawX();
@@ -411,9 +468,22 @@ public class BarChart extends View {
                 leftMoving = leftMoving + movingThisTime;
                 lastPointX = movex;
                 invalidate();
+                velocityTracker.addMovement(event);//将用户的action添加到跟踪器中。
                 break;
             case MotionEvent.ACTION_UP:
-                new Thread(new SmoothScrollThread(movingThisTime)).start();
+//                new Thread(new SmoothScrollThread(movingThisTime)).start();
+                velocityTracker.addMovement(event);
+                velocityTracker.computeCurrentVelocity(1000, maxVelocity);//根据已经到达的点计算当前速度。
+                int initialVelocity = (int) velocityTracker.getXVelocity();//获得最后的速度
+                velocityTracker.clear();
+                //通过scroller让它飞起来
+                scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
+                        0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
+                invalidate();
+                lastPointX = event.getRawX();
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                recycleVelocityTracker();//回收速度跟踪器
                 break;
             default:
                 return super.onTouchEvent(event);

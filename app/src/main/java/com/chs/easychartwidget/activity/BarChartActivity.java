@@ -33,5 +33,6 @@ public class BarChartActivity extends AppCompatActivity {
                 Toast.makeText(BarChartActivity.this,"点击了："+position,Toast.LENGTH_SHORT).show();
             }
         });
+        barChart.startAnimation(2000);
     }
 }

@@ -1,5 +1,7 @@
 package com.chs.easychartwidget.widget;
 
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,7 +11,11 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.Scroller;
 
 import com.chs.easychartwidget.entity.ChartEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
@@ -97,6 +103,20 @@ public class LineChart extends View {
      * 当前移动的距离
      */
     private float movingThisTime = 0.0f;
+
+    /**
+     * 速度跟踪器
+     */
+    private VelocityTracker velocityTracker;
+    /**
+     * 滑动
+     */
+    private Scroller scroller;
+    /**
+     * fling最大速度
+     */
+    private int maxVelocity;
+
     public LineChart(Context context) {
         super(context);
         init(context);
@@ -114,6 +134,8 @@ public class LineChart extends View {
 
     private void init(Context context) {
         setWillNotDraw(false);
+        scroller = new Scroller(context);
+        maxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
         mContext = context;
         leftMargin = DensityUtil.dip2px(context, 16);
         topMargin = DensityUtil.dip2px(context, 30);
@@ -235,7 +257,21 @@ public class LineChart extends View {
         }
         axisPaint.setColor(Color.BLACK);
     }
-
+    private float percent = 1f;
+    private TimeInterpolator pointInterpolator = new DecelerateInterpolator();
+    public void startAnimation(int duration){
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(0.2f,1);
+        mAnimator.setDuration(duration);
+        mAnimator.setInterpolator(pointInterpolator);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                percent = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        mAnimator.start();
+    }
     /**
      * 画线形图
      */
@@ -246,9 +282,9 @@ public class LineChart extends View {
             linePoints.add((int) (xStartIndex+distance));
             float lineHeight = mData.get(i).getyValue() * maxHeight / maxDivisionValue;
             if (i == 0) {
-                linePath.moveTo(xStartIndex + distance, paintBottom - lineHeight);
+                linePath.moveTo(xStartIndex + distance, (paintBottom - lineHeight)*percent);
             } else {
-                linePath.lineTo(xStartIndex + distance, paintBottom - lineHeight);
+                linePath.lineTo(xStartIndex + distance, (paintBottom - lineHeight)*percent);
             }
         }
         canvas.drawPath(linePath, linePaint);
@@ -261,7 +297,7 @@ public class LineChart extends View {
                 pointPaint.setColor(Color.parseColor("#EF6868"));
             //只有在可见的范围内才绘制
             if(linePoints.get(i)>=xStartIndex&&linePoints.get(i)<(mTotalWidth-leftMargin*2)){
-                canvas.drawCircle(linePoints.get(i), paintBottom - mData.get(i).getyValue() * maxHeight / maxDivisionValue, RADIUS, pointPaint);
+                canvas.drawCircle(linePoints.get(i), (paintBottom - mData.get(i).getyValue() * maxHeight / maxDivisionValue)*percent, RADIUS, pointPaint);
             }
         }
     }
@@ -306,12 +342,36 @@ public class LineChart extends View {
             }
         }
     }
-
+    private void initOrResetVelocityTracker() {
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain();
+        } else {
+            velocityTracker.clear();
+        }
+    }
+    private void recycleVelocityTracker() {
+        if (velocityTracker != null) {
+            velocityTracker.recycle();
+            velocityTracker = null;
+        }
+    }
+    @Override
+    public void computeScroll() {
+        if (scroller.computeScrollOffset()) {
+            movingThisTime = (scroller.getCurrX() - lastPointX);
+            leftMoving = leftMoving + movingThisTime;
+            lastPointX = scroller.getCurrX();
+            postInvalidate();
+        }
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 lastPointX = event.getRawX();
+                scroller.abortAnimation();//终止动画
+                initOrResetVelocityTracker();
+                velocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
                 break;
             case MotionEvent.ACTION_MOVE:
                 float movex = event.getRawX();
@@ -319,9 +379,21 @@ public class LineChart extends View {
                 leftMoving = leftMoving + movingThisTime;
                 lastPointX = movex;
                 invalidate();
+                velocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_UP:
-                new Thread(new SmoothScrollThread(movingThisTime)).start();
+//                new Thread(new SmoothScrollThread(movingThisTime)).start();
+                velocityTracker.addMovement(event);
+                velocityTracker.computeCurrentVelocity(1000, maxVelocity);
+                int initialVelocity = (int) velocityTracker.getXVelocity();
+                velocityTracker.clear();
+                scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
+                        0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
+                invalidate();
+                lastPointX = event.getRawX();
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                recycleVelocityTracker();
                 break;
             default:
                 return super.onTouchEvent(event);

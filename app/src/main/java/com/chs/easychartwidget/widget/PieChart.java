@@ -1,5 +1,7 @@
 package com.chs.easychartwidget.widget;
 
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 
 import com.chs.easychartwidget.entity.PieDataEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
@@ -134,7 +137,21 @@ public class PieChart extends View {
         //绘制饼图的每块区域
         drawPiePath(canvas);
     }
-
+    private float percent = 0f;
+    private TimeInterpolator pointInterpolator = new DecelerateInterpolator();
+    public void startAnimation(int duration){
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(0,1);
+        mAnimator.setDuration(duration);
+        mAnimator.setInterpolator(pointInterpolator);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                percent = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+        mAnimator.start();
+    }
     /**
      * 绘制饼图的每块区域 和文本
      * @param canvas
@@ -144,6 +161,7 @@ public class PieChart extends View {
         float startAngle = 0;
         for(int i = 0;i<mDataList.size();i++){
             float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
+            sweepAngle = sweepAngle * percent;
             mPaint.setColor(mDataList.get(i).getColor());
             //*******下面的两种方法选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
 //            mPath.moveTo(0,0);

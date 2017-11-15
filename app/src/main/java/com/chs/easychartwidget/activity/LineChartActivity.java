@@ -26,5 +26,6 @@ public class LineChartActivity extends AppCompatActivity {
             data.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
         }
         lineChart.setData(data);
+        lineChart.startAnimation(2000);
     }
 }
