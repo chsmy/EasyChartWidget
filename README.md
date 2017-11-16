@@ -31,7 +31,7 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e44.jpg)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e55.jpg)
  
- [**手撸一个Android柱形图和线型图的组合图表**](http://blog.csdn.net/mingyunxiaohai/article/details/51859275)
+ [**手撸一个Android柱形图和线型图的组合图表**](http://blog.csdn.net/mingyunxiaohai/article/details/78551279)
  
   ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e6.gif)
   ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e66.jpg)
