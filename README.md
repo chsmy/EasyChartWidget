@@ -11,27 +11,32 @@ EasyChartWidget 简单图表 不封装 其实就是一个一个的小demo。一�
 
 **效果图：  （gif 录制工具录制的不清楚 现实中会很清楚的**
 
- [手撸一个Android线形图表](http://blog.csdn.net/mingyunxiaohai/article/details/52461774)
+ [**手撸一个Android线形图表**](http://blog.csdn.net/mingyunxiaohai/article/details/52461774)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e1.gif)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e11.jpg)
  
- [手撸一个Android柱状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52471358)
+ [**手撸一个Android柱状图表**](http://blog.csdn.net/mingyunxiaohai/article/details/52471358)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e2.gif)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e22.jpg)
  
- [手撸一个Android饼状图表](http://blog.csdn.net/mingyunxiaohai/article/details/52597823)
+ [**手撸一个Android饼状图表**](http://blog.csdn.net/mingyunxiaohai/article/details/52597823)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e3.gif)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e33.jpg)
 
- [手撸一个Android饼状图表(环形饼状图)](http://blog.csdn.net/mingyunxiaohai/article/details/58072555)
+ [**手撸一个Android饼状图表(环形饼状图)**](http://blog.csdn.net/mingyunxiaohai/article/details/58072555)
 
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e44.jpg)
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e55.jpg)
  
- [ Android自定义View直线比例图](http://blog.csdn.net/mingyunxiaohai/article/details/52780953)
+ [**手撸一个Android柱形图和线型图的组合图表**](http://blog.csdn.net/mingyunxiaohai/article/details/51859275)
+ 
+  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e6.jpg)
+  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/e66.jpg)
+ 
+ [ **Android自定义View直线比例图**](http://blog.csdn.net/mingyunxiaohai/article/details/52780953)
  
  ![](https://github.com/chsmy/EasyChartWidget/blob/master/images/189.png)
  

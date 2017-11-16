@@ -447,31 +447,38 @@ public class BarChart extends View {
     }
     @Override
     public void computeScroll() {
+        Log.i("computeScroll","computeScrollstart:"+lastPointX+"   --getCurrX"+scroller.getCurrX()+"---leftMoving:"+leftMoving);
         if (scroller.computeScrollOffset()) {
             movingThisTime = (scroller.getCurrX() - lastPointX);
             leftMoving = leftMoving + movingThisTime;
             lastPointX = scroller.getCurrX();
             postInvalidate();
+            Log.i("computeScroll","computeScroll:"+lastPointX+"   --getCurrX"+scroller.getCurrX()+"---leftMoving:"+leftMoving);
         }
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (mGestureListener != null) {
+            mGestureListener.onTouchEvent(event);
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                lastPointX = event.getRawX();
+                lastPointX = event.getX();
                 scroller.abortAnimation();//如果在滑动终止动画
                 initOrResetVelocityTracker();//初始化速度跟踪器
+                Log.i("computeScroll","ACTION_DOWN:"+lastPointX);
                 break;
             case MotionEvent.ACTION_MOVE:
-                float movex = event.getRawX();
+                float movex = event.getX();
                 movingThisTime = lastPointX - movex;
                 leftMoving = leftMoving + movingThisTime;
                 lastPointX = movex;
                 invalidate();
                 velocityTracker.addMovement(event);//将用户的action添加到跟踪器中。
+                Log.i("computeScroll","ACTION_MOVE:"+lastPointX+"-----"+leftMoving);
                 break;
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-//                new Thread(new SmoothScrollThread(movingThisTime)).start();
                 velocityTracker.addMovement(event);
                 velocityTracker.computeCurrentVelocity(1000, maxVelocity);//根据已经到达的点计算当前速度。
                 int initialVelocity = (int) velocityTracker.getXVelocity();//获得最后的速度
@@ -479,57 +486,15 @@ public class BarChart extends View {
                 //通过scroller让它飞起来
                 scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
                         0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
+                lastPointX = event.getX();
+                Log.i("computeScroll","ACTION_UP:"+lastPointX);
                 invalidate();
-                lastPointX = event.getRawX();
-                break;
-            case MotionEvent.ACTION_CANCEL:
                 recycleVelocityTracker();//回收速度跟踪器
                 break;
             default:
                 return super.onTouchEvent(event);
         }
-        if (mGestureListener != null) {
-            mGestureListener.onTouchEvent(event);
-        }
         return true;
-    }
-
-    /**
-     * 左右滑动的时候 当手指抬起的时候  使滑动慢慢停止 不会立刻停止
-     */
-    private class SmoothScrollThread implements Runnable {
-        float lastMoving;
-        boolean scrolling = true;
-
-        private SmoothScrollThread(float lastMoving) {
-            this.lastMoving = lastMoving;
-            scrolling = true;
-        }
-
-        @Override
-        public void run() {
-            while (scrolling) {
-                long start = System.currentTimeMillis();
-                lastMoving = (int) (0.9f * lastMoving);
-                leftMoving += lastMoving;
-
-                checkTheLeftMoving();
-                postInvalidate();
-
-                if (Math.abs(lastMoving) < 5) {
-                    scrolling = false;
-                }
-
-                long end = System.currentTimeMillis();
-                if (end - start < 20) {
-                    try {
-                        Thread.sleep(20 - (end - start));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
     }
 
     /**

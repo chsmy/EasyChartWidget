@@ -368,19 +368,20 @@ public class LineChart extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                lastPointX = event.getRawX();
+                lastPointX = event.getX();
                 scroller.abortAnimation();//终止动画
                 initOrResetVelocityTracker();
                 velocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
                 break;
             case MotionEvent.ACTION_MOVE:
-                float movex = event.getRawX();
+                float movex = event.getX();
                 movingThisTime = lastPointX - movex;
                 leftMoving = leftMoving + movingThisTime;
                 lastPointX = movex;
                 invalidate();
                 velocityTracker.addMovement(event);
                 break;
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
 //                new Thread(new SmoothScrollThread(movingThisTime)).start();
                 velocityTracker.addMovement(event);
@@ -390,9 +391,7 @@ public class LineChart extends View {
                 scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
                         0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
                 invalidate();
-                lastPointX = event.getRawX();
-                break;
-            case MotionEvent.ACTION_CANCEL:
+                lastPointX = event.getX();
                 recycleVelocityTracker();
                 break;
             default:
@@ -445,44 +444,6 @@ public class LineChart extends View {
 
         maxDivisionValue = (float) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));//获取Y轴的最大的分度值
         xStartIndex = CalculateUtil.getDivisionTextMaxWidth(maxDivisionValue,mContext) + 20;
-    }
-
-    /**
-     * 左右滑动的时候 当手指抬起的时候  使滑动慢慢停止 不会立刻停止
-     */
-    private class SmoothScrollThread implements Runnable {
-        float lastMoving;
-        boolean scrolling = true;
-
-        private SmoothScrollThread(float lastMoving) {
-            this.lastMoving = lastMoving;
-            scrolling = true;
-        }
-
-        @Override
-        public void run() {
-            while (scrolling) {
-                long start = System.currentTimeMillis();
-                lastMoving = (int) (0.9f * lastMoving);
-                leftMoving += lastMoving;
-
-                checkTheLeftMoving();
-                postInvalidate();
-
-                if (Math.abs(lastMoving) < 5) {
-                    scrolling = false;
-                }
-
-                long end = System.currentTimeMillis();
-                if (end - start < 20) {
-                    try {
-                        Thread.sleep(20 - (end - start));
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
     }
 
     /**

@@ -22,6 +22,8 @@
         <activity android:name=".activity.ScaleActivity"/>
         <activity android:name=".activity.HollowPieChartNewActivity">
         </activity>
+        <activity android:name=".activity.CombineChartActivity">
+        </activity>
     </application>
 
 </manifest>
