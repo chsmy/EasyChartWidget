@@ -331,7 +331,7 @@ public class BarChart extends View {
      * 设定两个点之间的间距 和向右边滑动的时候右边的最大距离
      */
     private void getItemsWidth() {
-        int barMinWidth = DensityUtil.dip2px(getContext(), 40);
+        int barMinWidth = DensityUtil.dip2px(getContext(), 20);
         int barMinSpace = DensityUtil.dip2px(getContext(), 10);
 
         barWidth = (mTotalWidth - leftMargin * 2) / (mData.size() + 3);
