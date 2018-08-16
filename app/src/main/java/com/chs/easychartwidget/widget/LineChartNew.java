@@ -39,7 +39,7 @@ public class LineChartNew extends View {
     /**
      * 背景的颜色
      */
-    private static final int BG_COLOR = Color.parseColor("#EEEEEE");
+    private static final int BG_COLOR = Color.WHITE;
     /**
      * 视图的宽和高
      */
@@ -280,19 +280,19 @@ public class LineChartNew extends View {
         linePath.reset();
         linePath.incReserve(mData.size());
         checkTheLeftMoving();
-        //画中间的白线
+        //画中间的线
         drawWhiteLine(canvas);
         //画左边的Y轴
         canvas.drawLine(mStartX, mStartY, mStartX, topMargin / 2, axisPaint);
         //左边Y轴的单位
         canvas.drawText(leftAxisUnit, mStartX, topMargin / 2 - 14, textPaint);
         //画右边的Y轴
-        canvas.drawLine(mTotalWidth - leftMargin * 2, mStartY, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+//        canvas.drawLine(mTotalWidth - leftMargin * 2, mStartY, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
         //画左边的Y轴text
         drawLeftYAxis(canvas);
         //画X轴 下面的和上面
         canvas.drawLine(mStartX, mStartY, mTotalWidth - leftMargin * 2, mStartY, axisPaint);
-        canvas.drawLine(mStartX, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+//        canvas.drawLine(mStartX, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
 
         //调用clipRect()方法后，只会显示被裁剪的区域
         canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
@@ -323,7 +323,7 @@ public class LineChartNew extends View {
     }
 
     private void drawWhiteLine(Canvas canvas) {
-        axisPaint.setColor(Color.WHITE);
+        axisPaint.setColor(Color.parseColor("#EEEEEE"));
         float eachHeight = (maxHeight / 5f);
         for (int i = 1; i <= 5; i++) {
             float startY = mStartY - eachHeight * i;
@@ -500,7 +500,13 @@ public class LineChartNew extends View {
         }
         return true;
     }
-
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+        isDrawHint = false;
+        postInvalidate();
+        }
+    };
     /**
      * 绘制提示文字
      */
@@ -516,6 +522,7 @@ public class LineChartNew extends View {
         canvas.drawText("y : " + mData.get(selectIndex).getyValue(), mHintArea.centerX(),
                 mHintArea.centerY() + 12 - hintPaint.ascent()-hintPaint.descent(), hintPaint);
         hintPaint.setColor(hintColor);
+        postDelayed(mRunnable,800);
     }
 
     /**
@@ -535,6 +542,7 @@ public class LineChartNew extends View {
                     eventY >= y - range && eventY <= y + range) {//每个节点周围4dp都是可点击区域
                 selectIndex = i;
                 isDrawHint = true;
+                removeCallbacks(mRunnable);
                 invalidate();
                 return;
             }
