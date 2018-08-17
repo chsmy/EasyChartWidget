@@ -542,7 +542,7 @@ public class LineChartNew extends View {
                     eventY >= y - range && eventY <= y + range) {//每个节点周围4dp都是可点击区域
                 selectIndex = i;
                 isDrawHint = true;
-                removeCallbacks(mRunnable);
+                removeCallbacks(mRunnable);//移除掉上次点击的runnable
                 invalidate();
                 return;
             }
