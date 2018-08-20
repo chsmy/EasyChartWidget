@@ -163,6 +163,8 @@ public class PieChart extends View {
             float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
             sweepAngle = sweepAngle * percent;
             mPaint.setColor(mDataList.get(i).getColor());
+            mLinePaint.setColor(mDataList.get(i).getColor());
+            mTextPaint.setColor(mDataList.get(i).getColor());
             //*******下面的两种方法选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
 //            mPath.moveTo(0,0);
 //            if(position-1==i){
