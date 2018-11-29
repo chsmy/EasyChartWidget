@@ -249,7 +249,6 @@ public class LineChartNew extends View {
         paddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
         paddingRight = getPaddingRight();
-        getArea();
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -274,6 +273,7 @@ public class LineChartNew extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mData == null || mData.isEmpty()) return;
+        getArea();
         linePoints.clear();
         canvas.drawColor(BG_COLOR);
         //重置线

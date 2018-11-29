@@ -1,6 +1,7 @@
 package com.chs.easychartwidget.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * 邮箱：657083984@qq.com
  */
 public class LineChartActivity extends AppCompatActivity {
+    Handler mHandler = new Handler();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,27 +26,38 @@ public class LineChartActivity extends AppCompatActivity {
         LineChart lineChart = (LineChart) findViewById(R.id.chart);
         List<ChartEntity> data = new ArrayList<>();
         for(int i =0;i<20;i++){
-            data.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
+            data.add(new ChartEntity("item"+String.valueOf(i), (float) (Math.random()*1000)));
         }
         lineChart.setData(data);
         lineChart.startAnimation(2000);
+        final LineChartNew lineChartNew = (LineChartNew) findViewById(R.id.chart_1);
+        //模拟延时加载
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
+                List<ChartEntity> datas = new ArrayList<>();
+                for(int i =0;i<20;i++){
+                    datas.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
+                }
+                lineChartNew.setData(datas,false);
+                lineChartNew.startAnimation(6000);
+            }
+        },1000);
 
-        LineChartNew lineChartNew = (LineChartNew) findViewById(R.id.chart_1);
-        List<ChartEntity> datas = new ArrayList<>();
-        for(int i =0;i<20;i++){
-            datas.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
-        }
-        lineChartNew.setData(datas,false);
-        lineChartNew.startAnimation(6000);
+        final LineChartNew lineChartNew1 = (LineChartNew) findViewById(R.id.chart_2);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
+                List<ChartEntity> datas1 = new ArrayList<>();
+                for(int i =0;i<20;i++){
+                    datas1.add(new ChartEntity("item"+String.valueOf(i), (float) (Math.random()*1000)));
+                }
+                lineChartNew1.setData(datas1,true);
+                lineChartNew1.startAnimation(6000);
+            }
+        },1000);
 
-        LineChartNew lineChartNew1 = (LineChartNew) findViewById(R.id.chart_2);
-        List<ChartEntity> datas1 = new ArrayList<>();
-        for(int i =0;i<20;i++){
-            datas1.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
-        }
-        lineChartNew1.setData(datas1,true);
-        lineChartNew1.startAnimation(6000);
     }
 }
