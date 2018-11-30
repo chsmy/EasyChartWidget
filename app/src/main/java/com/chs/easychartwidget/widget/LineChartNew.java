@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -100,6 +101,7 @@ public class LineChartNew extends View {
      * 绘制的区域
      */
     private RectF mDrawArea, mHintArea;
+    private Rect leftWhiteRect, rightWhiteRect;
     /**
      * 保存点的x坐标
      */
@@ -249,6 +251,8 @@ public class LineChartNew extends View {
         paddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
         paddingRight = getPaddingRight();
+        leftWhiteRect = new Rect(0, 0, 0, mTotalHeight);
+        rightWhiteRect = new Rect(mTotalWidth - leftMargin * 2, 0, mTotalWidth, mTotalHeight);
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -290,16 +294,23 @@ public class LineChartNew extends View {
         canvas.drawText(leftAxisUnit, mStartX, topMargin / 2 - 14, textPaint);
         //画右边的Y轴
 //        canvas.drawLine(mTotalWidth - leftMargin * 2, mStartY, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
-        //画左边的Y轴text
-        drawLeftYAxis(canvas);
+
         //画X轴 下面的和上面
         canvas.drawLine(mStartX, mStartY, mTotalWidth - leftMargin * 2, mStartY, axisPaint);
 //        canvas.drawLine(mStartX, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
 
         //调用clipRect()方法后，只会显示被裁剪的区域
-        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
+//        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
         //画线形图
         drawLines(canvas);
+        //画左边和右边的遮罩层
+        leftWhiteRect.right = (int) mStartX;
+        canvas.drawRect(leftWhiteRect, bgPaint);
+        canvas.drawRect(rightWhiteRect, bgPaint);
+
+        //画左边的Y轴text
+        drawLeftYAxis(canvas);
+
         //画线上的点
         drawCircles(canvas);
         //画X轴的text
@@ -314,14 +325,15 @@ public class LineChartNew extends View {
         for (int i = 0; i < mData.size(); i++) {
             String text = mData.get(i).getxLabel();
             //当在可见的范围内才绘制
-//            if((mStartX+distance)>=mStartX&&(mStartX+distance)<(mTotalWidth-leftMargin*2)){}
-            if (text.length() <= 3) {
-                canvas.drawText(text, linePoints.get(i).x - (textPaint.measureText(text)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
-            } else {
-                String text1 = text.substring(0, 3);
-                String text2 = text.substring(3, text.length());
-                canvas.drawText(text1, linePoints.get(i).x - (textPaint.measureText(text1)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
-                canvas.drawText(text2, linePoints.get(i).x - (textPaint.measureText(text2)) / 2, mTotalHeight - bottomMargin / 3, textPaint);
+            if(linePoints.get(i).x>=mStartX - (textPaint.measureText(text)) / 2&&linePoints.get(i).x<(mTotalWidth-leftMargin*2)){
+                if (text.length() <= 3) {
+                    canvas.drawText(text, linePoints.get(i).x - (textPaint.measureText(text)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
+                } else {
+                    String text1 = text.substring(0, 3);
+                    String text2 = text.substring(3, text.length());
+                    canvas.drawText(text1, linePoints.get(i).x - (textPaint.measureText(text1)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
+                    canvas.drawText(text2, linePoints.get(i).x - (textPaint.measureText(text2)) / 2, mTotalHeight - bottomMargin / 3, textPaint);
+                }
             }
         }
     }
@@ -396,7 +408,9 @@ public class LineChartNew extends View {
         for (int i = 0; i < mData.size(); i++) {
             pointPaint.setColor(Color.parseColor("#EF6868"));
 //            canvas.drawCircle(linePoints.get(i), (mStartY - mData.get(i).getyValue() * maxHeight / maxYDivisionValue) * percent, RADIUS, pointPaint);
-            canvas.drawCircle(linePoints.get(i).x, linePoints.get(i).y * percent, RADIUS, pointPaint);
+            if(linePoints.get(i).x>=mStartX&&linePoints.get(i).x<(mTotalWidth-leftMargin*2)){
+                canvas.drawCircle(linePoints.get(i).x, linePoints.get(i).y * percent, RADIUS, pointPaint);
+            }
         }
     }
 
