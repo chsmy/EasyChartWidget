@@ -261,12 +261,14 @@ public class LineChartNew extends View {
 
     //获取滑动范围和指定区域
     private void getArea() {
-        maxRight = (int) (mStartX + space * mData.size());
-        minRight = mTotalWidth - leftMargin - rightMargin;
-        mStartY = mTotalHeight - bottomMargin - paddingBottom;
-        mDrawArea = new RectF(mStartX, paddingTop, mTotalWidth - paddingRight - rightMargin, mTotalHeight - paddingBottom);
-        mHintArea = new RectF(mDrawArea.right - mDrawArea.right / 4, mDrawArea.top + topMargin / 2,
-                mDrawArea.right, mDrawArea.top + mDrawArea.height() / 4 + topMargin / 2);
+        if(mData!=null){
+            maxRight = (int) (mStartX + space * mData.size());
+            minRight = mTotalWidth - leftMargin - rightMargin;
+            mStartY = mTotalHeight - bottomMargin - paddingBottom;
+            mDrawArea = new RectF(mStartX, paddingTop, mTotalWidth - paddingRight - rightMargin, mTotalHeight - paddingBottom);
+            mHintArea = new RectF(mDrawArea.right - mDrawArea.right / 4, mDrawArea.top + topMargin / 2,
+                    mDrawArea.right, mDrawArea.top + mDrawArea.height() / 4 + topMargin / 2);
+        }
     }
 
     @Override
@@ -311,6 +313,8 @@ public class LineChartNew extends View {
         //这里设置 x 轴的字一条最多显示3个，大于三个就换行
         for (int i = 0; i < mData.size(); i++) {
             String text = mData.get(i).getxLabel();
+            //当在可见的范围内才绘制
+//            if((mStartX+distance)>=mStartX&&(mStartX+distance)<(mTotalWidth-leftMargin*2)){}
             if (text.length() <= 3) {
                 canvas.drawText(text, linePoints.get(i).x - (textPaint.measureText(text)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
             } else {
@@ -360,7 +364,8 @@ public class LineChartNew extends View {
      */
     private void drawLines(Canvas canvas) {
         float distance = 0;
-        float lineStart = mStartX + textPaint.measureText(mData.get(0).getxLabel()) / 2 + 20;
+//        float lineStart = mStartX + textPaint.measureText(mData.get(0).getxLabel()) / 2 + 20;
+        float lineStart = mStartX;
         for (int i = 0; i < mData.size(); i++) {
             distance = space * i - leftMoving;
             float lineHeight = mData.get(i).getyValue() * maxHeight / maxYDivisionValue;
@@ -553,12 +558,11 @@ public class LineChartNew extends View {
      * 检查向左滑动的距离 确保没有画出屏幕
      */
     private void checkTheLeftMoving() {
-        if (leftMoving < 0) {
-            leftMoving = 0;
-        }
-
         if (leftMoving > (maxRight - minRight)) {
             leftMoving = maxRight - minRight;
+        }
+        if (leftMoving < 0) {
+            leftMoving = 0;
         }
     }
 
