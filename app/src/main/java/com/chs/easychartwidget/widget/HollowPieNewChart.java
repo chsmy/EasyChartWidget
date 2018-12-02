@@ -144,6 +144,8 @@ public class HollowPieNewChart extends View {
             float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
 //            mPath.moveTo(0,0);
             mPaint.setColor(mDataList.get(i).getColor());
+            mLinePaint.setColor(mDataList.get(i).getColor());
+            mTextPaint.setColor(mDataList.get(i).getColor());
             if(position-1==i){
                 canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
             }else {
@@ -170,9 +172,11 @@ public class HollowPieNewChart extends View {
             double resToRound = CalculateUtil.round(res,2);
             float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
-                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%"),pyt,mTextPaint);
+                canvas.drawLine(pxt,pyt,pxt-30,pyt,mLinePaint);
+                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%")-30,pyt,mTextPaint);
             }else {
-                canvas.drawText(resToRound+"%",pxt,pyt,mTextPaint);
+                canvas.drawLine(pxt,pyt,pxt+30,pyt,mLinePaint);
+                canvas.drawText(resToRound+"%",pxt+30,pyt,mTextPaint);
             }
         }
         mPaint.setColor(Color.WHITE);
