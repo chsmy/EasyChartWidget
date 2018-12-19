@@ -143,6 +143,7 @@ public class HollowPieNewChart extends View {
         for(int i = 0;i<mDataList.size();i++){
             float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
 //            mPath.moveTo(0,0);
+            int xOffset = DensityUtil.dip2px(getContext(),10);
             mPaint.setColor(mDataList.get(i).getColor());
             mLinePaint.setColor(mDataList.get(i).getColor());
             mTextPaint.setColor(mDataList.get(i).getColor());
@@ -160,8 +161,8 @@ public class HollowPieNewChart extends View {
 //            float pyt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxs = (float) (mOutRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pys = (float) (mOutRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
-            float pxt = (float) ((mOutRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-            float pyt = (float) ((mOutRadius+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+            float pxt = (float) ((mOutRadius+xOffset)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
+            float pyt = (float) ((mOutRadius+xOffset)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
 
             angles[i] = startAngle;
             startAngle += sweepAngle+1;
@@ -172,10 +173,10 @@ public class HollowPieNewChart extends View {
             double resToRound = CalculateUtil.round(res,2);
             float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
-                canvas.drawLine(pxt,pyt,pxt-30,pyt,mLinePaint);
-                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%")-30,pyt,mTextPaint);
+                canvas.drawLine(pxt,pyt,pxt-xOffset,pyt,mLinePaint);
+                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%")-xOffset,pyt,mTextPaint);
             }else {
-                canvas.drawLine(pxt,pyt,pxt+30,pyt,mLinePaint);
+                canvas.drawLine(pxt,pyt,pxt+xOffset,pyt,mLinePaint);
                 canvas.drawText(resToRound+"%",pxt+30,pyt,mTextPaint);
             }
         }
