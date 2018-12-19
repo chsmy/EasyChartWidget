@@ -31,19 +31,19 @@ public class LineChartActivity extends AppCompatActivity {
         lineChart.setData(data);
         lineChart.startAnimation(2000);
         final LineChartNew lineChartNew = (LineChartNew) findViewById(R.id.chart_1);
-        //模拟延时加载
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+//        //模拟延时加载
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
 
                 List<ChartEntity> datas = new ArrayList<>();
-                for(int i =0;i<20;i++){
+                for(int i =0;i<50;i++){
                     datas.add(new ChartEntity(String.valueOf(i), (float) (Math.random()*1000)));
                 }
                 lineChartNew.setData(datas,false);
                 lineChartNew.startAnimation(6000);
-            }
-        },1000);
+//            }
+//        },100);
 
         final LineChartNew lineChartNew1 = (LineChartNew) findViewById(R.id.chart_2);
         mHandler.postDelayed(new Runnable() {

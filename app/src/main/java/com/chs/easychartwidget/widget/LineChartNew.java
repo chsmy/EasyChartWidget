@@ -157,6 +157,7 @@ public class LineChartNew extends View {
     }
 
     private void init(Context context) {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setWillNotDraw(false);
         mContext = context;
 
