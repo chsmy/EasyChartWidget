@@ -10,6 +10,7 @@ import com.chs.easychartwidget.R;
 import com.chs.easychartwidget.entity.BarChartEntity;
 import com.chs.easychartwidget.entity.ChartEntity;
 import com.chs.easychartwidget.widget.BarChart;
+import com.chs.easychartwidget.widget.BarChart2;
 import com.chs.easychartwidget.widget.BarChartNew;
 
 import java.util.ArrayList;
@@ -87,5 +88,25 @@ public class BarChartActivity extends AppCompatActivity {
                 new int[]{Color.parseColor("#6FC5F4"),Color.parseColor("#78DA9F"),Color.parseColor("#FCAE84")}
                 ,"分组","数量");
         barChartNew2.startAnimation();
+
+        //Y轴正负都有
+        initBarChart3();
+    }
+
+
+    private void initBarChart3() {
+        BarChart2 barChart = findViewById(R.id.chart_new_3);
+        List<BarChartEntity> data = new ArrayList<>();
+//        data.add(new BarChartEntity("特种设备组", new Float[]{(float) (Math.random()*1000)}));
+        for(int i =0;i<20;i++){
+//            data.add(new BarChartEntity("第"+String.valueOf(i)+"项", new Float[]{(float) (Math.random()*-1000)}));
+            if(i%2==0){
+                data.add(new BarChartEntity("第"+String.valueOf(i)+"项", new Float[]{(float) (Math.random()*1000)}));
+            }else {
+                data.add(new BarChartEntity("第"+String.valueOf(i)+"项", new Float[]{(float) (Math.random()*-1000)}));
+            }
+        }
+        barChart.setData(data,new int[]{Color.parseColor("#6FC5F4")},"分组","数量",500,-400);
+        barChart.startAnimation();
     }
 }

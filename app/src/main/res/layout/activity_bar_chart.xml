@@ -3,10 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/margin"
+    android:paddingBottom="@dimen/dp_10"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/margin"
+    android:paddingTop="@dimen/dp_10"
     android:orientation="vertical"
     >
 
@@ -26,6 +26,13 @@
         />
     <com.chs.easychartwidget.widget.BarChartNew
         android:id="@+id/chart_new_2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        />
+    <com.chs.easychartwidget.widget.BarChart2
+        android:id="@+id/chart_new_3"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
