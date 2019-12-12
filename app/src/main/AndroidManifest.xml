@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.chs.easychartwidget">
+    package="com.chs.easychartwidget">
 
     <application
         android:allowBackup="true"
@@ -8,22 +8,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.DoubleBarCharActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LineChartActivity"/>
-        <activity android:name=".activity.BarChartActivity"/>
-        <activity android:name=".activity.PieChartActivity"/>
-        <activity android:name=".activity.HollowPieChartActivity"/>
-        <activity android:name=".activity.ScaleActivity"/>
-        <activity android:name=".activity.HollowPieChartNewActivity">
-        </activity>
-        <activity android:name=".activity.CombineChartActivity">
-        </activity>
+        <activity android:name=".activity.LineChartActivity" />
+        <activity android:name=".activity.BarChartActivity" />
+        <activity android:name=".activity.PieChartActivity" />
+        <activity android:name=".activity.HollowPieChartActivity" />
+        <activity android:name=".activity.ScaleActivity" />
+        <activity android:name=".activity.HollowPieChartNewActivity"></activity>
+        <activity android:name=".activity.CombineChartActivity"></activity>
     </application>
 
 </manifest>

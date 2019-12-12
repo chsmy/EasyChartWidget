@@ -31,32 +31,16 @@ public class BarChartBean {
         return yNum1;
     }
 
-    public void setyNum1(float yNum1) {
-        this.yNum1 = yNum1;
-    }
-
     public float getyNum2() {
         return yNum2;
-    }
-
-    public void setyNum2(float yNum2) {
-        this.yNum2 = yNum2;
     }
 
     public String getxLabel() {
         return xLabel;
     }
 
-    public void setxLabel(String xLabel) {
-        this.xLabel = xLabel;
-    }
-
     public float getyNum() {
         return yNum;
-    }
-
-    public void setyNum(float yNum) {
-        this.yNum = yNum;
     }
 
     public int[] getBarColor() {

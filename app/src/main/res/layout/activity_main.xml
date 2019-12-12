@@ -10,45 +10,8 @@
     android:orientation="vertical"
     >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:onClick="toLineChart"
-        android:text="线型图"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:onClick="toBarChart"
-        android:text="柱型图"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:onClick="toPieChart"
-        android:text="饼状图"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:onClick="toHollowPieChart"
-        android:text="空心的饼状图"/>
-    <Button
-        android:id="@+id/btn_path_pie_hollow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="toNewHollowPieChart"
-        android:text="新空心饼状图"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="toScaleView"
-        android:text="直线比例"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="toCombineChart"
-        android:text="组合图表"/>
-
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerview"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
 </LinearLayout>
