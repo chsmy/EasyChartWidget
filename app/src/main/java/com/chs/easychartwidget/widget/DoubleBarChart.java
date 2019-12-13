@@ -33,7 +33,7 @@ public class DoubleBarChart extends View {
     /* 用户点击到了无效位置 */
     public static final int INVALID_POSITION = -1;
     private Context mContext;
-    private Paint mBarPaint,mLinePaint,mTextPaint;
+    private Paint mBarPaint,mLinePaint,mTextPaint,mBorderPaint;
     private int mLeftColor = Color.parseColor("#6FC5F4");
     private int mRightColor = Color.parseColor("#78DA9F");
     private int mTotalWidth, mTotalHeight,mUseHeight;
@@ -52,7 +52,7 @@ public class DoubleBarChart extends View {
     private int mBarSpace;
     private int mBarWidth;
     private RectF mDrawArea;
-    private Rect mBarLeft,mBarRight;
+    private Rect mBarLeft,mBarRight,mBarClickLeft,mBarClickRight;
     private List<Integer> mBarLeftXPoints = new ArrayList<>();
     private List<Integer> mBarRightXPoints = new ArrayList<>();
     /**
@@ -127,6 +127,12 @@ public class DoubleBarChart extends View {
         mLinePaint.setAntiAlias(true);
         mLinePaint.setStyle(Paint.Style.FILL);
 
+        mBorderPaint = new Paint();
+        mBorderPaint.setAntiAlias(true);
+        mBorderPaint.setStyle(Paint.Style.FILL);
+        mBorderPaint.setColor(Color.rgb(0, 0, 0));
+        mBorderPaint.setAlpha(120);
+
         mTextPaint = new Paint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
@@ -134,6 +140,8 @@ public class DoubleBarChart extends View {
         mDrawArea = new RectF();
         mBarLeft = new Rect(0, 0, 0, 0);
         mBarRight = new Rect(0, 0, 0, 0);
+        mBarClickLeft = new Rect(0, 0, 0, 0);
+        mBarClickRight = new Rect(0, 0, 0, 0);
     }
 
     public void setData(List<DoubleBarEntity> list, int leftColor, int rightColor) {
@@ -196,6 +204,8 @@ public class DoubleBarChart extends View {
     }
 
     private void drawBar(Canvas canvas) {
+        mBarLeftXPoints.clear();
+        mBarRightXPoints.clear();
         mBarLeft.bottom = mStartY;
         mBarRight.bottom = mStartY;
         for (int i = 0; i < mData.size(); i++) {
@@ -216,8 +226,23 @@ public class DoubleBarChart extends View {
             mBarLeftXPoints.add(mBarLeft.left);
             mBarRightXPoints.add(mBarRight.right);
         }
+        if (isDrawBorder) {
+            drawBorder(mClickPosition);
+            canvas.drawRect(mBarClickLeft, mBorderPaint);
+            canvas.drawRect(mBarClickRight, mBorderPaint);
+        }
     }
+    private void drawBorder(int position) {
+        mBarClickLeft.left = (int) (mStartX + mBarWidth*2 * position + mBarSpace * (position + 1) - mLeftMoving);
+        mBarClickLeft.right = mBarClickLeft.left + mBarWidth;
+        mBarClickLeft.bottom = mStartY;
+        mBarClickLeft.top = mStartY - (int) (mUseHeight * (mData.get(position).getLeftNum() / maxYDivisionValue));
 
+        mBarClickRight.left = (int) (mStartX + mBarWidth*2 * position + mBarSpace * (position + 1) + mBarWidth - mLeftMoving);
+        mBarClickRight.right = mBarClickRight.left + mBarWidth;
+        mBarClickRight.bottom = mStartY;
+        mBarClickRight.top = mStartY - (int) (mUseHeight * (mData.get(position).getRightNum() / maxYDivisionValue));
+    }
     private void drawXAxisText(Canvas canvas,int i) {
            //这里设置 x 轴的字一条最多显示3个，大于三个就换行
             String text = mData.get(i).getxLabel();

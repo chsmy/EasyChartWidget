@@ -3,6 +3,7 @@ package com.chs.easychartwidget.activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.chs.easychartwidget.R;
 import com.chs.easychartwidget.entity.DoubleBarEntity;
@@ -30,5 +31,11 @@ public class DoubleBarCharActivity extends AppCompatActivity {
         list.add(new DoubleBarEntity("9月",1000,1700));
         list.add(new DoubleBarEntity("10月",1000,2000));
         doubleBarChart.setData(list, Color.parseColor("#6FC5F4"),Color.parseColor("#78DA9F"));
+        doubleBarChart.setOnItemBarClickListener(new DoubleBarChart.OnItemBarClickListener() {
+            @Override
+            public void onClick(int position) {
+                Toast.makeText(DoubleBarCharActivity.this,"position:"+position,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
