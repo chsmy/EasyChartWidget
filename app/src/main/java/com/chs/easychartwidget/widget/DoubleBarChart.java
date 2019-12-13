@@ -111,7 +111,7 @@ public class DoubleBarChart extends View {
         mBarSpace = DensityUtil.dip2px(getContext(), 20);
         mTopMargin = DensityUtil.dip2px(getContext(), 20);
         mBottomMargin = DensityUtil.dip2px(getContext(), 30);
-        mRightMargin = DensityUtil.dip2px(getContext(), 40);
+        mRightMargin = DensityUtil.dip2px(getContext(), 20);
         mLeftMargin = DensityUtil.dip2px(getContext(), 10);
 
         mScroller = new Scroller(context);
