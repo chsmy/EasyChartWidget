@@ -20,6 +20,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EdgeEffect;
 import android.widget.Scroller;
 
 import com.chs.easychartwidget.entity.ChartEntity;
@@ -140,7 +141,15 @@ public class LineChartNew extends View {
      */
     private boolean isDrawHint = false;
     private int hintColor = Color.RED;
-
+    private EdgeEffect edgeEffectLeft, edgeEffectRight;
+    /**
+     * 优化fling状态下的边缘效果绘制
+     */
+    private boolean hasAbsorbLeft, hasAbsorbRight;
+    /**
+     * 是否需要边缘反馈效果
+     */
+    private boolean needEdgeEffect = true;
     public LineChartNew(Context context) {
         super(context);
         init(context);
@@ -160,7 +169,8 @@ public class LineChartNew extends View {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setWillNotDraw(false);
         mContext = context;
-
+        edgeEffectLeft = new EdgeEffect(context);
+        edgeEffectRight = new EdgeEffect(context);
         space = DensityUtil.dip2px(getContext(), 30);
         bottomMargin = DensityUtil.dip2px(getContext(), 30);
         topMargin = DensityUtil.dip2px(context, 30);
@@ -231,6 +241,23 @@ public class LineChartNew extends View {
     }
 
     /**
+     * 是否滑动到了左边缘
+     *
+     * @return
+     */
+    private boolean isArriveAtLeftEdge() {
+        return leftMoving <= 0;
+    }
+
+    /**
+     * 是否滑动到了右边缘
+     *
+     * @return
+     */
+    private boolean isArriveAtRightEdge() {
+        return leftMoving >= maxRight - minRight;
+    }
+    /**
      * 得到柱状图的最大和最小的分度值
      *
      * @param maxValueInItems
@@ -275,8 +302,43 @@ public class LineChartNew extends View {
                     mDrawArea.right, mDrawArea.top + mDrawArea.height() / 4 + topMargin / 2);
         }
     }
-
     @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        if (mData==null||mData.isEmpty()) return;
+        if (!needEdgeEffect) return;
+        if (!edgeEffectLeft.isFinished()) {
+            canvas.save();
+            canvas.rotate(-90);
+            canvas.translate(-mStartY, mDrawArea.left);
+            edgeEffectLeft.setSize((int)maxHeight, (int) maxHeight);
+            if (edgeEffectLeft.draw(canvas)) {
+                postInvalidate();
+            }
+            canvas.restore();
+        }
+
+        if (!edgeEffectRight.isFinished()) {
+            canvas.save();
+            canvas.rotate(90);
+            canvas.translate(topMargin, -mDrawArea.right);
+            edgeEffectRight.setSize((int) maxHeight, (int)  maxHeight);
+            if (edgeEffectRight.draw(canvas)) {
+                postInvalidate();
+            }
+            canvas.restore();
+        }
+    }
+    private void endDrag() {
+        recycleVelocityTracker();
+        if (edgeEffectLeft != null) {
+            edgeEffectLeft.onRelease();
+        }
+        if(edgeEffectRight!=null){
+            edgeEffectRight.onRelease();
+        }
+    }
+        @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mData == null || mData.isEmpty()) return;
@@ -481,7 +543,19 @@ public class LineChartNew extends View {
             movingThisTime = (scroller.getCurrX() - lastPointX);
             leftMoving = leftMoving + movingThisTime;
             lastPointX = scroller.getCurrX();
+            if (needEdgeEffect) {
+                if (!hasAbsorbLeft &&isArriveAtLeftEdge()) {
+                    hasAbsorbLeft = true;
+                    edgeEffectLeft.onAbsorb((int) scroller.getCurrVelocity());
+                } else if (!hasAbsorbRight&&isArriveAtRightEdge()) {
+                    hasAbsorbRight = true;
+                    edgeEffectRight.onAbsorb((int) scroller.getCurrVelocity());
+                }
+            }
             postInvalidate();
+        }else {
+            hasAbsorbLeft = false;
+            hasAbsorbRight = false;
         }
     }
 
@@ -501,6 +575,13 @@ public class LineChartNew extends View {
                 lastPointX = movex;
                 invalidate();
                 velocityTracker.addMovement(event);
+                if (needEdgeEffect) {
+                    if (isArriveAtLeftEdge()) {
+                        edgeEffectLeft.onPull(Math.abs(mStartX) / mDrawArea.height());
+                    } else if (isArriveAtRightEdge()) {
+                        edgeEffectRight.onPull(Math.abs(mStartX) / mDrawArea.height());
+                    }
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
@@ -509,11 +590,14 @@ public class LineChartNew extends View {
                 velocityTracker.computeCurrentVelocity(1000, maxVelocity);
                 int initialVelocity = (int) velocityTracker.getXVelocity();
                 velocityTracker.clear();
-                scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
-                        0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
-                invalidate();
+                if (!isArriveAtLeftEdge() && !isArriveAtRightEdge()) {
+                    scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
+                            0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
+                    invalidate();
+                }else {
+                    endDrag();
+                }
                 lastPointX = event.getX();
-                recycleVelocityTracker();
                 break;
             default:
                 return super.onTouchEvent(event);
