@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.DoubleBarCharActivity"></activity>
+        <activity android:name=".activity.BarAndLineActivity"></activity>
+        <activity android:name=".activity.DoubleBarCharActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,8 +22,8 @@
         <activity android:name=".activity.PieChartActivity" />
         <activity android:name=".activity.HollowPieChartActivity" />
         <activity android:name=".activity.ScaleActivity" />
-        <activity android:name=".activity.HollowPieChartNewActivity"></activity>
-        <activity android:name=".activity.CombineChartActivity"></activity>
+        <activity android:name=".activity.HollowPieChartNewActivity" />
+        <activity android:name=".activity.CombineChartActivity" />
     </application>
 
 </manifest>

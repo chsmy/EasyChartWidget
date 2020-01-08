@@ -68,6 +68,50 @@ public class CalculateUtil {
 
         return 10.0f;
     }
+
+    public static float getRangeMin(float value) {
+        //value: [1,10)
+        if (value < 1.0) {
+            return 0f;
+        }
+
+        if (value < 1.5) {
+            return 1.0f;
+        }
+
+        if (value < 2.0) {
+            return 1.0f;
+        }
+
+        if (value < 3.0) {
+            return 2.0f;
+        }
+
+        if (value < 4.0) {
+            return 3.0f;
+        }
+
+        if (value < 5.0) {
+            return 4.0f;
+        }
+
+        if (value < 6.0) {
+            return 5.0f;
+        }
+        if (value < 7.0) {
+            return 6.0f;
+        }
+
+        if (value < 8.0) {
+            return 7.0f;
+        }
+        if (value < 9.0) {
+            return 8.0f;
+        }
+
+        return 9.0f;
+    }
+
     /**
      * 数字的乘法精度计算
      */

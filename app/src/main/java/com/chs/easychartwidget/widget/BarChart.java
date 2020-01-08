@@ -206,7 +206,6 @@ public class BarChart extends View {
         paintBottom = mTotalHeight - topMargin / 2;
         maxHeight = paintBottom - paintTop;
         yStartIndex = mTotalHeight - topMargin / 2;
-        ;
     }
 
     @Override
@@ -232,33 +231,34 @@ public class BarChart extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(BG_COLOR);
-        if (mData == null) return;
-        //得到每个bar的宽度
-        getItemsWidth();
-        checkTheLeftMoving();
-        canvas.drawRect(bottomWhiteRect, bgPaint);
-        canvas.drawRect(topWhiteRect, bgPaint);
-        //画中间的白线
-        drawWhiteLine(canvas);
-        //绘制矩形柱子
-        drawBars(canvas);
-        //画左边和右边的遮罩层
-        leftWhiteRect.right = (int) xStartIndex;
-        canvas.drawRect(leftWhiteRect, bgPaint);
-        canvas.drawRect(rightWhiteRect, bgPaint);
-        //画左边的Y轴
-        canvas.drawLine(xStartIndex, yStartIndex, xStartIndex, topMargin / 2, axisPaint);
-        //左边Y轴的单位
-        canvas.drawText(leftAxisUnit, xStartIndex, topMargin / 2 - 14, textPaint);
-        //画右边的Y轴
-        canvas.drawLine(mTotalWidth - leftMargin * 2, yStartIndex, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
-        //画左边的Y轴text
-        drawLeftYAxis(canvas);
-        //画X轴 下面的和上面
-        canvas.drawLine(xStartIndex, yStartIndex, mTotalWidth - leftMargin * 2, yStartIndex, axisPaint);
-        canvas.drawLine(xStartIndex, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
-        //画X轴的text
-        drawXAxisText(canvas);
+        if (mData != null) {
+            //得到每个bar的宽度
+            getItemsWidth();
+            checkTheLeftMoving();
+            canvas.drawRect(bottomWhiteRect, bgPaint);
+            canvas.drawRect(topWhiteRect, bgPaint);
+            //画中间的白线
+            drawWhiteLine(canvas);
+            //绘制矩形柱子
+            drawBars(canvas);
+            //画左边和右边的遮罩层
+            leftWhiteRect.right = (int) xStartIndex;
+            canvas.drawRect(leftWhiteRect, bgPaint);
+            canvas.drawRect(rightWhiteRect, bgPaint);
+            //画左边的Y轴
+            canvas.drawLine(xStartIndex, yStartIndex, xStartIndex, topMargin / 2, axisPaint);
+            //左边Y轴的单位
+            canvas.drawText(leftAxisUnit, xStartIndex, topMargin / 2 - 14, textPaint);
+            //画右边的Y轴
+            canvas.drawLine(mTotalWidth - leftMargin * 2, yStartIndex, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+            //画左边的Y轴text
+            drawLeftYAxis(canvas);
+            //画X轴 下面的和上面
+            canvas.drawLine(xStartIndex, yStartIndex, mTotalWidth - leftMargin * 2, yStartIndex, axisPaint);
+            canvas.drawLine(xStartIndex, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+            //画X轴的text
+            drawXAxisText(canvas);
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.chs.easychartwidget.activity.BarAndLineActivity;
 import com.chs.easychartwidget.activity.BarChartActivity;
 import com.chs.easychartwidget.activity.CombineChartActivity;
 import com.chs.easychartwidget.activity.DoubleBarCharActivity;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         mList.add(new MainBean("空心饼1",new Intent(this, HollowPieChartNewActivity.class)));
         mList.add(new MainBean("直线比例",new Intent(this, ScaleActivity.class)));
         mList.add(new MainBean("组合图",new Intent(this, CombineChartActivity.class)));
+        mList.add(new MainBean("线和柱",new Intent(this, BarAndLineActivity.class)));
     }
 
     private void setRecyclerView() {

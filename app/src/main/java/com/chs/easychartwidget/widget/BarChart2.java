@@ -274,21 +274,22 @@ public class BarChart2 extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mData == null || mData.isEmpty()) return;
-        getArea();
-        checkTheLeftMoving();
-        //绘制刻度线 和 刻度
-        drawScaleLine(canvas);
-        //绘制轴
-        drawAxis(canvas);
-        //绘制单位
-        drawUnit(canvas);
-        //调用clipRect()方法后，只会显示被裁剪的区域
-        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
-        //绘制柱子
-        drawBar(canvas);
-        //绘制X轴的text
-        drawXAxisText(canvas);
+        if (mData != null && !mData.isEmpty()) {
+            getArea();
+            checkTheLeftMoving();
+            //绘制刻度线 和 刻度
+            drawScaleLine(canvas);
+            //绘制轴
+            drawAxis(canvas);
+            //绘制单位
+            drawUnit(canvas);
+            //调用clipRect()方法后，只会显示被裁剪的区域
+            canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
+            //绘制柱子
+            drawBar(canvas);
+            //绘制X轴的text
+            drawXAxisText(canvas);
+        }
     }
 
     private void drawAxis(Canvas canvas) {
