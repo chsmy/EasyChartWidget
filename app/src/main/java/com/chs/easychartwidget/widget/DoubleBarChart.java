@@ -33,7 +33,9 @@ public class DoubleBarChart extends View {
     /* 用户点击到了无效位置 */
     public static final int INVALID_POSITION = -1;
     private Context mContext;
-    private Paint mBarPaint,mLinePaint,mTextPaint,mBorderPaint;
+    private Paint mBarPaint;
+    private Paint mTextPaint;
+    private Paint mBorderPaint;
     private int mLeftColor = Color.parseColor("#6FC5F4");
     private int mRightColor = Color.parseColor("#78DA9F");
     private int mTotalWidth, mTotalHeight,mUseHeight;
@@ -46,7 +48,7 @@ public class DoubleBarChart extends View {
     /**
      * Y轴最大的刻度值
      */
-    private int maxYDivisionValue;
+    private int mMaxYDivisionValue;
     private int mTopMargin,mBottomMargin,mRightMargin,mLeftMargin;
     private int mMaxRight, mMinRight;
     private int mBarSpace;
@@ -123,10 +125,6 @@ public class DoubleBarChart extends View {
         mBarPaint.setAntiAlias(true);
         mBarPaint.setStyle(Paint.Style.FILL);
 
-        mLinePaint = new Paint();
-        mLinePaint.setAntiAlias(true);
-        mLinePaint.setStyle(Paint.Style.FILL);
-
         mBorderPaint = new Paint();
         mBorderPaint.setAntiAlias(true);
         mBorderPaint.setStyle(Paint.Style.FILL);
@@ -176,9 +174,9 @@ public class DoubleBarChart extends View {
         //最大值除以位数之后剩下的值  比如1200/1000 后剩下1.2
         float unScaleValue = (float) (maxYValue / Math.pow(10, scale));
         //获取Y轴的最大的分度值
-        maxYDivisionValue = (int) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));
+        mMaxYDivisionValue = (int) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));
         //得到最大宽度值的文本
-        mStartX = CalculateUtil.getDivisionTextMaxWidth(maxYDivisionValue, mContext) + getPaddingLeft();
+        mStartX = CalculateUtil.getDivisionTextMaxWidth(mMaxYDivisionValue, mContext) + getPaddingLeft();
     }
 
     @Override
@@ -210,11 +208,11 @@ public class DoubleBarChart extends View {
         mBarRight.bottom = mStartY;
         for (int i = 0; i < mData.size(); i++) {
             mBarLeft.left = (int) (mStartX + mBarWidth * i*2 + mBarSpace * (i + 1)- mLeftMoving);
-            mBarLeft.top = mStartY - (int)((mUseHeight * (mData.get(i).getLeftNum() / maxYDivisionValue)));
+            mBarLeft.top = mStartY - (int)((mUseHeight * (mData.get(i).getLeftNum() / mMaxYDivisionValue)));
             mBarLeft.right = mBarLeft.left + mBarWidth;
 
             mBarRight.left = mBarLeft.right;
-            mBarRight.top = mStartY - (int)((mUseHeight * (mData.get(i).getRightNum() / maxYDivisionValue)));
+            mBarRight.top = mStartY - (int)((mUseHeight * (mData.get(i).getRightNum() / mMaxYDivisionValue)));
             mBarRight.right = mBarRight.left + mBarWidth;
 
             mBarPaint.setColor(mLeftColor);
@@ -236,12 +234,12 @@ public class DoubleBarChart extends View {
         mBarClickLeft.left = (int) (mStartX + mBarWidth*2 * position + mBarSpace * (position + 1) - mLeftMoving);
         mBarClickLeft.right = mBarClickLeft.left + mBarWidth;
         mBarClickLeft.bottom = mStartY;
-        mBarClickLeft.top = mStartY - (int) (mUseHeight * (mData.get(position).getLeftNum() / maxYDivisionValue));
+        mBarClickLeft.top = mStartY - (int) (mUseHeight * (mData.get(position).getLeftNum() / mMaxYDivisionValue));
 
         mBarClickRight.left = (int) (mStartX + mBarWidth*2 * position + mBarSpace * (position + 1) + mBarWidth - mLeftMoving);
         mBarClickRight.right = mBarClickRight.left + mBarWidth;
         mBarClickRight.bottom = mStartY;
-        mBarClickRight.top = mStartY - (int) (mUseHeight * (mData.get(position).getRightNum() / maxYDivisionValue));
+        mBarClickRight.top = mStartY - (int) (mUseHeight * (mData.get(position).getRightNum() / mMaxYDivisionValue));
     }
     private void drawXAxisText(Canvas canvas,int i) {
            //这里设置 x 轴的字一条最多显示3个，大于三个就换行
@@ -274,7 +272,7 @@ public class DoubleBarChart extends View {
     private String getTextValue(int i) {
         String text = "";
         if (mMaxYValue > 1) {
-            text = String.valueOf((int)(0.2*maxYDivisionValue*i));
+            text = String.valueOf((int)(0.2*mMaxYDivisionValue*i));
         } else if (mMaxYValue > 0 && mMaxYValue <= 1) {
             text = String.valueOf(0.2+i);
         }else {

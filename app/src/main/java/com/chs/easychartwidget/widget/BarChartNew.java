@@ -39,33 +39,33 @@ public class BarChartNew extends View {
     /**
      * 视图的宽和高  刻度区域的最大值
      */
-    private int mTotalWidth, mTotalHeight,maxHeight;
-    private int paddingRight, paddingBottom, paddingTop;
-    //柱形图的颜色集合
-    private int barColors[];
-    //距离底部的多少 用来显示底部的文字
-    private int bottomMargin;
-    //距离顶部的多少 用来显示顶部的文字
-    private int topMargin;
-    private int rightMargin;
-    private int leftMargin;
+    private int mTotalWidth, mTotalHeight, mMaxHeight;
+    private int mPaddingRight, mPaddingBottom, mPaddingTop;
+    /**
+     * 柱形图的颜色集合
+     */
+    private int[] mBarColors;
+    private int mBottomMargin;
+    private int mTopMargin;
+    private int mRightMargin;
+    private int mLeftMargin;
     /**
      * 画笔 轴 刻度 柱子 点击后的柱子 单位
      */
-    private Paint axisPaint,textPaint,barPaint,borderPaint,unitPaint;
-    private List<BarChartEntity> mData;//数据集合
+    private Paint mAxisPaint, mTextPaint, mBarPaint, mBorderPaint, mUnitPaint;
+    private List<BarChartEntity> mData;
     /**
      * item中的Y轴最大值
      */
-    private float maxYValue;
+    private float mMaxYValue;
     /**
      * Y轴最大的刻度值
      */
-    private float maxYDivisionValue;
+    private float mMaxYDivisionValue;
     /**
      * 柱子的矩形
      */
-    private Rect mBarRect,mBarRectClick;
+    private Rect mBarRect, mBarRectClick;
     /**
      * 绘制的区域
      */
@@ -73,27 +73,27 @@ public class BarChartNew extends View {
     /**
      * 每一个bar的宽度
      */
-    private int barWidth;
+    private int mBarWidth;
     /**
      * 每个bar之间的距离
      */
-    private int barSpace;
+    private int mBarSpace;
     /**
      * 向右边滑动的距离
      */
-    private float leftMoving;
+    private float mLeftMoving;
     /**
      * 左后一次的x坐标
      */
-    private float lastPointX;
+    private float mLastPointX;
     /**
      * 当前移动的距离
      */
-    private float movingThisTime = 0.0f;
+    private float mMovingThisTime = 0.0f;
     /**
      * 右边的最大和最小值
      */
-    private int maxRight, minRight;
+    private int mMaxRight, mMinRight;
     /**
      * 下面两个相当于图表的原点
      */
@@ -105,7 +105,9 @@ public class BarChartNew extends View {
     private List<Integer> mBarLeftXPoints = new ArrayList<>();
     private List<Integer> mBarRightXPoints = new ArrayList<>();
 
-    /* 用户点击到了无效位置 */
+    /**
+     * 用户点击到了无效位置
+     */
     public static final int INVALID_POSITION = -1;
     private OnItemBarClickListener mOnItemBarClickListener;
     private GestureDetector mGestureListener;
@@ -119,19 +121,19 @@ public class BarChartNew extends View {
     private int mClickPosition;
 
     //滑动速度相关
-    private VelocityTracker velocityTracker;
-    private Scroller scroller;
+    private VelocityTracker mVelocityTracker;
+    private Scroller mScroller;
     /**
      * fling最大速度
      */
-    private int maxVelocity;
-    //x轴 y轴的单位
-    private String unitX;
-    private String unitY;
+    private int mMaxVelocity;
+    private String mUnitX;
+    private String mUnitY;
 
     public void setOnItemBarClickListener(OnItemBarClickListener onRangeBarClickListener) {
         this.mOnItemBarClickListener = onRangeBarClickListener;
     }
+
     public interface OnItemBarClickListener {
         void onClick(int position);
     }
@@ -153,77 +155,79 @@ public class BarChartNew extends View {
 
     private void init(Context context) {
         mContext = context;
-        barWidth = DensityUtil.dip2px(getContext(), 20);
-        barSpace = DensityUtil.dip2px(getContext(), 20);
-        topMargin = DensityUtil.dip2px(getContext(), 20);
-        bottomMargin = DensityUtil.dip2px(getContext(), 30);
-        rightMargin = DensityUtil.dip2px(getContext(), 40);
-        leftMargin = DensityUtil.dip2px(getContext(), 10);
+        mBarWidth = DensityUtil.dip2px(getContext(), 20);
+        mBarSpace = DensityUtil.dip2px(getContext(), 20);
+        mTopMargin = DensityUtil.dip2px(getContext(), 20);
+        mBottomMargin = DensityUtil.dip2px(getContext(), 30);
+        mRightMargin = DensityUtil.dip2px(getContext(), 40);
+        mLeftMargin = DensityUtil.dip2px(getContext(), 10);
 
-        scroller = new Scroller(context);
-        maxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
+        mScroller = new Scroller(context);
+        mMaxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
         mGestureListener = new GestureDetector(context, new RangeBarOnGestureListener());
 
-        axisPaint = new Paint();
-        axisPaint.setColor(ContextCompat.getColor(mContext, R.color.axis));
-        axisPaint.setStrokeWidth(1);
+        mAxisPaint = new Paint();
+        mAxisPaint.setColor(ContextCompat.getColor(mContext, R.color.axis));
+        mAxisPaint.setStrokeWidth(1);
 
-        textPaint = new Paint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
+        mTextPaint = new Paint();
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
 
-        unitPaint = new Paint();
-        unitPaint.setAntiAlias(true);
+        mUnitPaint = new Paint();
+        mUnitPaint.setAntiAlias(true);
         Typeface typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
-        unitPaint.setTypeface(typeface);
-        unitPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
+        mUnitPaint.setTypeface(typeface);
+        mUnitPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
 
-        barPaint = new Paint();
-        barPaint.setColor(barColors!=null&&barColors.length>0?barColors[0]: Color.parseColor("#6FC5F4"));
+        mBarPaint = new Paint();
+        mBarPaint.setColor(mBarColors != null && mBarColors.length > 0 ? mBarColors[0] : Color.parseColor("#6FC5F4"));
 
-        borderPaint = new Paint();
-        borderPaint.setAntiAlias(true);
-        borderPaint.setStyle(Paint.Style.FILL);
-        borderPaint.setColor(Color.rgb(0, 0, 0));
-        borderPaint.setAlpha(120);
+        mBorderPaint = new Paint();
+        mBorderPaint.setAntiAlias(true);
+        mBorderPaint.setStyle(Paint.Style.FILL);
+        mBorderPaint.setColor(Color.rgb(0, 0, 0));
+        mBorderPaint.setAlpha(120);
 
         mBarRect = new Rect(0, 0, 0, 0);
         mBarRectClick = new Rect(0, 0, 0, 0);
         mDrawArea = new RectF(0, 0, 0, 0);
     }
-    public void setData(List<BarChartEntity> list, int colors[], String unitX, String unitY) {
+
+    public void setData(List<BarChartEntity> list, int colors[], String mUnitX, String mUnitY) {
         this.mData = list;
-        this.barColors = colors;
-        this.unitX = unitX;
-        this.unitY = unitY;
-        if(list!=null&&list.size()>0){
-        maxYValue = calculateMax(list);
-        getRange(maxYValue);
-          }
+        this.mBarColors = colors;
+        this.mUnitX = mUnitX;
+        this.mUnitY = mUnitY;
+        if (list != null && list.size() > 0) {
+            mMaxYValue = calculateMax(list);
+            getRange(mMaxYValue);
+        }
     }
 
     /**
      * 计算出Y轴最大值
+     *
      * @return
      */
-    private float calculateMax(List<BarChartEntity> list){
+    private float calculateMax(List<BarChartEntity> list) {
         float start = list.get(0).getSum();
-            for (BarChartEntity entity : list) {
-                if (entity.getSum() > start) {
-                    start = entity.getSum();
-                }
+        for (BarChartEntity entity : list) {
+            if (entity.getSum() > start) {
+                start = entity.getSum();
             }
+        }
         return start;
     }
 
     /**
-     *  得到柱状图的最大和最小的分度值
+     * 得到柱状图的最大和最小的分度值
      */
-    private void getRange(float maxYValue) {
-        int scale = CalculateUtil.getScale(maxYValue);//获取这个最大数 数总共有几位
-        float unScaleValue = (float) (maxYValue / Math.pow(10, scale));//最大值除以位数之后剩下的值  比如1200/1000 后剩下1.2
-        maxYDivisionValue = (float) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));//获取Y轴的最大的分度值
-        mStartX = CalculateUtil.getDivisionTextMaxWidth(maxYDivisionValue, mContext) + 20;
+    private void getRange(float mMaxYValue) {
+        int scale = CalculateUtil.getScale(mMaxYValue);//获取这个最大数 数总共有几位
+        float unScaleValue = (float) (mMaxYValue / Math.pow(10, scale));//最大值除以位数之后剩下的值  比如1200/1000 后剩下1.2
+        mMaxYDivisionValue = (float) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));//获取Y轴的最大的分度值
+        mStartX = CalculateUtil.getDivisionTextMaxWidth(mMaxYDivisionValue, mContext) + 20;
     }
 
     @Override
@@ -236,25 +240,26 @@ public class BarChartNew extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         mTotalWidth = w;
         mTotalHeight = h;
-        maxHeight = h - getPaddingTop() - getPaddingBottom()-bottomMargin-topMargin;
-        paddingBottom = getPaddingBottom();
-        paddingTop = getPaddingTop();
+        mMaxHeight = h - getPaddingTop() - getPaddingBottom() - mBottomMargin - mTopMargin;
+        mPaddingBottom = getPaddingBottom();
+        mPaddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
-        paddingRight = getPaddingRight();
+        mPaddingRight = getPaddingRight();
 
     }
 
     //获取滑动范围和指定区域
     private void getArea() {
-        maxRight = (int) (mStartX + (barSpace + barWidth) * mData.size());
-        minRight = mTotalWidth - leftMargin - rightMargin;
-        mStartY = mTotalHeight - bottomMargin - paddingBottom;
-        mDrawArea = new RectF(mStartX, paddingTop, mTotalWidth - paddingRight - rightMargin, mTotalHeight - paddingBottom);
+        mMaxRight = (int) (mStartX + (mBarSpace + mBarWidth) * mData.size());
+        mMinRight = mTotalWidth - mLeftMargin - mRightMargin;
+        mStartY = mTotalHeight - mBottomMargin - mPaddingBottom;
+        mDrawArea = new RectF(mStartX, mPaddingTop, mTotalWidth - mPaddingRight - mRightMargin, mTotalHeight - mPaddingBottom);
     }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mData==null|| mData.isEmpty()) return;
+        if (mData == null || mData.isEmpty()) return;
         getArea();
         checkTheLeftMoving();
         //绘制刻度线 和 刻度
@@ -262,7 +267,7 @@ public class BarChartNew extends View {
         //绘制单位
         drawUnit(canvas);
         //调用clipRect()方法后，只会显示被裁剪的区域
-        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom+mDrawArea.height());
+        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
         //绘制柱子
         drawBar(canvas);
         //绘制X轴的text
@@ -270,40 +275,43 @@ public class BarChartNew extends View {
     }
 
     private void drawUnit(Canvas canvas) {
-        String textLength = maxYDivisionValue%5==0? String.valueOf((int)maxYDivisionValue): String.valueOf(maxYDivisionValue);
-        canvas.drawText(unitY,mStartX-textPaint.measureText(textLength),topMargin/2,unitPaint);
-        canvas.drawText(unitX,mTotalWidth-rightMargin-paddingRight+10,mTotalHeight-bottomMargin/2,unitPaint);
+        String textLength = mMaxYDivisionValue % 5 == 0 ? String.valueOf((int) mMaxYDivisionValue) : String.valueOf(mMaxYDivisionValue);
+        canvas.drawText(mUnitY, mStartX - mTextPaint.measureText(textLength), mTopMargin / 2, mUnitPaint);
+        canvas.drawText(mUnitX, mTotalWidth - mRightMargin - mPaddingRight + 10, mTotalHeight - mBottomMargin / 2, mUnitPaint);
     }
 
     /**
      * 检查向左滑动的距离 确保没有画出屏幕
      */
     private void checkTheLeftMoving() {
-        if (leftMoving > (maxRight - minRight)) {
-            leftMoving = maxRight - minRight;
+        if (mLeftMoving > (mMaxRight - mMinRight)) {
+            mLeftMoving = mMaxRight - mMinRight;
         }
-        if (leftMoving < 0) {
-            leftMoving = 0;
+        if (mLeftMoving < 0) {
+            mLeftMoving = 0;
         }
     }
+
     private void drawXAxisText(Canvas canvas) {
         //这里设置 x 轴的字一条最多显示3个，大于三个就换行
         for (int i = 0; i < mData.size(); i++) {
             String text = mData.get(i).getxLabel();
-            if(text.length()<=3){
-                canvas.drawText(text, mBarLeftXPoints.get(i) - (textPaint.measureText(text) - barWidth) / 2, mTotalHeight-bottomMargin*2/3, textPaint);
-            }else {
-                String text1 = text.substring(0,3);
-                String text2 = text.substring(3,text.length());
-                canvas.drawText(text1, mBarLeftXPoints.get(i) - (textPaint.measureText(text1) - barWidth) / 2, mTotalHeight-bottomMargin*2/3, textPaint);
-                canvas.drawText(text2, mBarLeftXPoints.get(i) - (textPaint.measureText(text2) - barWidth) / 2, mTotalHeight-bottomMargin/3, textPaint);
+            if (text.length() <= 3) {
+                canvas.drawText(text, mBarLeftXPoints.get(i) - (mTextPaint.measureText(text) - mBarWidth) / 2, mTotalHeight - mBottomMargin * 2 / 3, mTextPaint);
+            } else {
+                String text1 = text.substring(0, 3);
+                String text2 = text.substring(3, text.length());
+                canvas.drawText(text1, mBarLeftXPoints.get(i) - (mTextPaint.measureText(text1) - mBarWidth) / 2, mTotalHeight - mBottomMargin * 2 / 3, mTextPaint);
+                canvas.drawText(text2, mBarLeftXPoints.get(i) - (mTextPaint.measureText(text2) - mBarWidth) / 2, mTotalHeight - mBottomMargin / 3, mTextPaint);
             }
         }
     }
+
     private float percent = 1f;
     private TimeInterpolator pointInterpolator = new DecelerateInterpolator();
-    public void startAnimation(){
-        ValueAnimator mAnimator = ValueAnimator.ofFloat(0,1);
+
+    public void startAnimation() {
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(0, 1);
         mAnimator.setDuration(2000);
         mAnimator.setInterpolator(pointInterpolator);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -315,26 +323,27 @@ public class BarChartNew extends View {
         });
         mAnimator.start();
     }
+
     private void drawBar(Canvas canvas) {
         mBarLeftXPoints.clear();
         mBarRightXPoints.clear();
         mBarRect.bottom = mStartY;
         for (int i = 0; i < mData.size(); i++) {
-            if(barColors.length == 1){
-                mBarRect.left = (int) (mStartX + barWidth * i + barSpace * (i + 1)- leftMoving);
-                mBarRect.top = mStartY - (int)((maxHeight * (mData.get(i).getyValue()[0] / maxYDivisionValue))*percent);
-                mBarRect.right = mBarRect.left + barWidth;
-                canvas.drawRect(mBarRect, barPaint);
-            }else {
+            if (mBarColors.length == 1) {
+                mBarRect.left = (int) (mStartX + mBarWidth * i + mBarSpace * (i + 1) - mLeftMoving);
+                mBarRect.top = mStartY - (int) ((mMaxHeight * (mData.get(i).getyValue()[0] / mMaxYDivisionValue)) * percent);
+                mBarRect.right = mBarRect.left + mBarWidth;
+                canvas.drawRect(mBarRect, mBarPaint);
+            } else {
                 int eachHeight = 0;//每一块的高度
-                mBarRect.left = (int) (mStartX + barWidth * i + barSpace * (i + 1)- leftMoving);
-                mBarRect.right = mBarRect.left + barWidth;
-                for (int j = 0;j< barColors.length;j++) {
-                    barPaint.setColor(barColors[j]);
-                    mBarRect.bottom = (int) (mStartY-eachHeight*percent);
-                    eachHeight += (int) ((maxHeight * (mData.get(i).getyValue()[j] / maxYDivisionValue)));
-                    mBarRect.top = (int) (mBarRect.bottom - ((maxHeight * (mData.get(i).getyValue()[j] / maxYDivisionValue)))*percent);
-                    canvas.drawRect(mBarRect, barPaint);
+                mBarRect.left = (int) (mStartX + mBarWidth * i + mBarSpace * (i + 1) - mLeftMoving);
+                mBarRect.right = mBarRect.left + mBarWidth;
+                for (int j = 0; j < mBarColors.length; j++) {
+                    mBarPaint.setColor(mBarColors[j]);
+                    mBarRect.bottom = (int) (mStartY - eachHeight * percent);
+                    eachHeight += (int) ((mMaxHeight * (mData.get(i).getyValue()[j] / mMaxYDivisionValue)));
+                    mBarRect.top = (int) (mBarRect.bottom - ((mMaxHeight * (mData.get(i).getyValue()[j] / mMaxYDivisionValue))) * percent);
+                    canvas.drawRect(mBarRect, mBarPaint);
                 }
             }
             mBarLeftXPoints.add(mBarRect.left);
@@ -342,103 +351,109 @@ public class BarChartNew extends View {
         }
         if (isDrawBorder) {
             drawBorder(mClickPosition);
-            canvas.drawRect(mBarRectClick, borderPaint);
+            canvas.drawRect(mBarRectClick, mBorderPaint);
         }
     }
+
     private void drawBorder(int position) {
-        mBarRectClick.left = (int) (mStartX + barWidth * position + barSpace * (position + 1) - leftMoving);
-        mBarRectClick.right = mBarRectClick.left + barWidth;
+        mBarRectClick.left = (int) (mStartX + mBarWidth * position + mBarSpace * (position + 1) - mLeftMoving);
+        mBarRectClick.right = mBarRectClick.left + mBarWidth;
         mBarRectClick.bottom = mStartY;
-        mBarRectClick.top = mStartY - (int) (maxHeight * (mData.get(position).getSum() / maxYDivisionValue));
+        mBarRectClick.top = mStartY - (int) (mMaxHeight * (mData.get(position).getSum() / mMaxYDivisionValue));
     }
+
     /**
-     *  Y轴上的text (1)当最大值大于1 的时候 将其分成5份 计算每个部分的高度  分成几份可以自己定
+     * Y轴上的text (1)当最大值大于1 的时候 将其分成5份 计算每个部分的高度  分成几份可以自己定
      * （2）当最大值大于0小于1的时候  也是将最大值分成5份
      * （3）当为0的时候使用默认的值
      */
     private void drawScaleLine(Canvas canvas) {
-        float eachHeight = (maxHeight / 5f);
+        float eachHeight = (mMaxHeight / 5f);
         float textValue = 0;
-        if (maxYValue > 1) {
+        if (mMaxYValue > 1) {
             for (int i = 0; i <= 5; i++) {
                 float startY = mStartY - eachHeight * i;
-                BigDecimal maxValue = new BigDecimal(maxYDivisionValue);
+                BigDecimal maxValue = new BigDecimal(mMaxYDivisionValue);
                 BigDecimal fen = new BigDecimal(0.2 * i);
                 String text = null;
                 //因为图表分了5条线，如果能除不进，需要显示小数点不然数据不准确
-                if (maxYDivisionValue % 5 != 0) {
+                if (mMaxYDivisionValue % 5 != 0) {
                     text = String.valueOf(maxValue.multiply(fen).floatValue());
                 } else {
                     text = String.valueOf(maxValue.multiply(fen).longValue());
                 }
-                canvas.drawText(text, mStartX - textPaint.measureText(text) -5, startY + textPaint.measureText("0")/2, textPaint);
-                canvas.drawLine(mStartX, startY, mTotalWidth-paddingRight-rightMargin, startY, axisPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0") / 2, mTextPaint);
+                canvas.drawLine(mStartX, startY, mTotalWidth - mPaddingRight - mRightMargin, startY, mAxisPaint);
             }
-        } else if (maxYValue > 0 && maxYValue <= 1) {
+        } else if (mMaxYValue > 0 && mMaxYValue <= 1) {
             for (int i = 0; i <= 5; i++) {
-                float startY = mStartY-eachHeight * i;
-                textValue = CalculateUtil.numMathMul(maxYDivisionValue, (float) (0.2 * i));
+                float startY = mStartY - eachHeight * i;
+                textValue = CalculateUtil.numMathMul(mMaxYDivisionValue, (float) (0.2 * i));
                 String text = String.valueOf(textValue);
-                canvas.drawText(text,  mStartX - textPaint.measureText(text) - 5, startY + textPaint.measureText("0")/2, textPaint);
-                canvas.drawLine(mStartX, startY, mTotalWidth-paddingRight-rightMargin, startY, axisPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0") / 2, mTextPaint);
+                canvas.drawLine(mStartX, startY, mTotalWidth - mPaddingRight - mRightMargin, startY, mAxisPaint);
             }
         } else {
             for (int i = 0; i <= 5; i++) {
-                float startY = mStartY-eachHeight * i;
+                float startY = mStartY - eachHeight * i;
                 String text = String.valueOf(10 * i);
-                canvas.drawText(text,mStartX - textPaint.measureText(text) - 5, startY + textPaint.measureText("0")/2, textPaint);
-                canvas.drawLine(mStartX, startY, mTotalWidth-paddingRight-rightMargin, startY, axisPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0") / 2, mTextPaint);
+                canvas.drawLine(mStartX, startY, mTotalWidth - mPaddingRight - mRightMargin, startY, mAxisPaint);
             }
         }
     }
+
     private void initOrResetVelocityTracker() {
-        if (velocityTracker == null) {
-            velocityTracker = VelocityTracker.obtain();
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
         } else {
-            velocityTracker.clear();
+            mVelocityTracker.clear();
         }
     }
+
     private void recycleVelocityTracker() {
-        if (velocityTracker != null) {
-            velocityTracker.recycle();
-            velocityTracker = null;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
         }
     }
+
     @Override
     public void computeScroll() {
-        if (scroller.computeScrollOffset()) {
-            movingThisTime = (scroller.getCurrX() - lastPointX);
-            leftMoving = leftMoving + movingThisTime;
-            lastPointX = scroller.getCurrX();
+        if (mScroller.computeScrollOffset()) {
+            mMovingThisTime = (mScroller.getCurrX() - mLastPointX);
+            mLeftMoving = mLeftMoving + mMovingThisTime;
+            mLastPointX = mScroller.getCurrX();
             postInvalidate();
         }
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                lastPointX = event.getX();
-                scroller.abortAnimation();//终止动画
+                mLastPointX = event.getX();
+                mScroller.abortAnimation();//终止动画
                 initOrResetVelocityTracker();
-                velocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
+                mVelocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
                 break;
             case MotionEvent.ACTION_MOVE:
                 float movex = event.getX();
-                movingThisTime = lastPointX - movex;
-                leftMoving = leftMoving + movingThisTime;
-                lastPointX = movex;
+                mMovingThisTime = mLastPointX - movex;
+                mLeftMoving = mLeftMoving + mMovingThisTime;
+                mLastPointX = movex;
                 invalidate();
-                velocityTracker.addMovement(event);
+                mVelocityTracker.addMovement(event);
                 break;
             case MotionEvent.ACTION_UP:
-                velocityTracker.addMovement(event);
-                velocityTracker.computeCurrentVelocity(1000, maxVelocity);
-                int initialVelocity = (int) velocityTracker.getXVelocity();
-                velocityTracker.clear();
-                scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
+                mVelocityTracker.addMovement(event);
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
+                int initialVelocity = (int) mVelocityTracker.getXVelocity();
+                mVelocityTracker.clear();
+                mScroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
                         0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
                 invalidate();
-                lastPointX = event.getX();
+                mLastPointX = event.getX();
                 break;
             case MotionEvent.ACTION_CANCEL:
                 recycleVelocityTracker();
@@ -453,16 +468,18 @@ public class BarChartNew extends View {
     }
 
     /**
-     *  点击
+     * 点击
      */
     private class RangeBarOnGestureListener implements GestureDetector.OnGestureListener {
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
         }
+
         @Override
         public void onShowPress(MotionEvent e) {
         }
+
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             int position = identifyWhichItemClick(e.getX(), e.getY());
@@ -473,13 +490,16 @@ public class BarChartNew extends View {
             }
             return true;
         }
+
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             return false;
         }
+
         @Override
         public void onLongPress(MotionEvent e) {
         }
+
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             return false;
@@ -498,6 +518,7 @@ public class BarChartNew extends View {
 
     /**
      * 根据点击的手势位置识别是第几个柱图被点击
+     *
      * @param x
      * @param y
      * @return -1时表示点击的是无效位置

@@ -12,6 +12,9 @@ import com.chs.easychartwidget.widget.DoubleBarChart;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author chs
+ */
 public class DoubleBarCharActivity extends AppCompatActivity {
 
     @Override

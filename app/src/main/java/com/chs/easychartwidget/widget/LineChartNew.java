@@ -46,7 +46,7 @@ public class LineChartNew extends View {
      * 视图的宽和高
      */
     private int mTotalWidth, mTotalHeight;
-    private int paddingRight, paddingBottom, paddingTop;
+    private int mPaddingRight, mPaddingBottom, mPaddingTop;
     /**
      * x轴 y轴 起始坐标
      */
@@ -54,80 +54,74 @@ public class LineChartNew extends View {
     /**
      * 图表绘制区域的顶部和底部  图表绘制区域的最大高度
      */
-    private float paintTop, paintBottom, maxHeight;
-    //距离底部的多少 用来显示底部的文字
-    private int bottomMargin;
-    //距离顶部的多少 用来显示顶部的文字
-    private int topMargin;
-    /**
-     * 左边和上边的边距
-     */
-    private int leftMargin, rightMargin;
+    private float maxHeight;
+    private int mBottomMargin;
+    private int mTopMargin;
+    private int mLeftMargin, mRightMargin;
     /**
      * 画笔 背景，轴 ，线 ，text ,点 提示线
      */
-    private Paint bgPaint, axisPaint, linePaint, textPaint, pointPaint, hintPaint;
+    private Paint mBgPaint, mAxisPaint, mLinePaint, mTextPaint, mPointPaint, mHintPaint;
     /**
      * 原点的半径
      */
     private static final float RADIUS = 8;
-    private List<ChartEntity> mData;//数据集合
+    private List<ChartEntity> mData;
     /**
      * 右边的最大和最小值
      */
-    private int maxRight, minRight;
+    private int mMaxRight, mMinRight;
     /**
      * item中的Y轴最大值
      */
-    private float maxYValue;
+    private float mMaxYValue;
     /**
      * 最大分度值
      */
-    private float maxYDivisionValue;
+    private float mMaxYDivisionValue;
     /**
      * 线的路径
      */
-    Path linePath;
+    Path mLinePath;
     /**
      * 向右边滑动的距离
      */
-    private float leftMoving;
-    //左边Y轴的单位
-    private String leftAxisUnit = "单位";
+    private float mLeftMoving;
+    private String mLeftAxisUnit = "单位";
     /**
      * 两个点之间的距离
      */
-    private int space;
+    private int mSpace;
     /**
      * 绘制的区域
      */
     private RectF mDrawArea, mHintArea;
-    private Rect leftWhiteRect, rightWhiteRect;
+    private Rect mLeftWhiteRect, mRightWhiteRect;
     /**
      * 保存点的x坐标
      */
-    private List<Point> linePoints = new ArrayList<>();
+    private List<Point> mLinePoints = new ArrayList<>();
     /**
      * 左后一次的x坐标
      */
-    private float lastPointX;
+    private float mLastPointX;
     /**
      * 当前移动的距离
      */
-    private float movingThisTime = 0.0f;
+    private float mMovingThisTime = 0.0f;
 
     /**
      * 速度跟踪器
      */
-    private VelocityTracker velocityTracker;
+    private VelocityTracker mVelocityTracker;
     /**
      * 滑动
      */
-    private Scroller scroller;
+    private Scroller mScroller;
     /**
      * fling最大速度
      */
-    private int maxVelocity;
+    private int mMaxVelocity;
     /**
      * 是不是绘制曲线
      */
@@ -135,21 +129,22 @@ public class LineChartNew extends View {
     /**
      * 点击的点的位置
      */
-    private int selectIndex;
+    private int mSelectIndex;
     /**
      * 是否绘制提示文字
      */
     private boolean isDrawHint = false;
-    private int hintColor = Color.RED;
-    private EdgeEffect edgeEffectLeft, edgeEffectRight;
+    private int mHintColor = Color.RED;
+    private EdgeEffect mEdgeEffectLeft, mEdgeEffectRight;
     /**
      * 优化fling状态下的边缘效果绘制
      */
-    private boolean hasAbsorbLeft, hasAbsorbRight;
+    private boolean mHasAbsorbLeft, mHasAbsorbRight;
     /**
      * 是否需要边缘反馈效果
      */
-    private boolean needEdgeEffect = true;
+    private boolean mNeedEdgeEffect = true;
+
     public LineChartNew(Context context) {
         super(context);
         init(context);
@@ -169,49 +164,49 @@ public class LineChartNew extends View {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         setWillNotDraw(false);
         mContext = context;
-        edgeEffectLeft = new EdgeEffect(context);
-        edgeEffectRight = new EdgeEffect(context);
-        space = DensityUtil.dip2px(getContext(), 30);
-        bottomMargin = DensityUtil.dip2px(getContext(), 30);
-        topMargin = DensityUtil.dip2px(context, 30);
-        rightMargin = DensityUtil.dip2px(getContext(), 20);
-        leftMargin = DensityUtil.dip2px(getContext(), 10);
+        mEdgeEffectLeft = new EdgeEffect(context);
+        mEdgeEffectRight = new EdgeEffect(context);
+        mSpace = DensityUtil.dip2px(getContext(), 30);
+        mBottomMargin = DensityUtil.dip2px(getContext(), 30);
+        mTopMargin = DensityUtil.dip2px(context, 30);
+        mRightMargin = DensityUtil.dip2px(getContext(), 20);
+        mLeftMargin = DensityUtil.dip2px(getContext(), 10);
 
-        scroller = new Scroller(context);
-        maxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
+        mScroller = new Scroller(context);
+        mMaxVelocity = ViewConfiguration.get(context).getScaledMaximumFlingVelocity();
 
-        bgPaint = new Paint();
-        bgPaint.setColor(Color.WHITE);
+        mBgPaint = new Paint();
+        mBgPaint.setColor(Color.WHITE);
 
-        axisPaint = new Paint();
-        axisPaint.setStrokeWidth(DensityUtil.dip2px(context, 1));
+        mAxisPaint = new Paint();
+        mAxisPaint.setStrokeWidth(DensityUtil.dip2px(context, 1));
 
-        textPaint = new Paint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
+        mTextPaint = new Paint();
+        mTextPaint.setAntiAlias(true);
+        mTextPaint.setTextSize(DensityUtil.dip2px(getContext(), 10));
 
-        linePaint = new Paint();
-        linePaint.setAntiAlias(true);
-        linePaint.setStrokeWidth(DensityUtil.dip2px(context, 1));
-        linePaint.setColor(Color.BLUE);
-        linePaint.setStyle(Paint.Style.STROKE);
+        mLinePaint = new Paint();
+        mLinePaint.setAntiAlias(true);
+        mLinePaint.setStrokeWidth(DensityUtil.dip2px(context, 1));
+        mLinePaint.setColor(Color.BLUE);
+        mLinePaint.setStyle(Paint.Style.STROKE);
 
-        pointPaint = new Paint();
-        pointPaint.setAntiAlias(true);
-        pointPaint.setStyle(Paint.Style.FILL);
+        mPointPaint = new Paint();
+        mPointPaint.setAntiAlias(true);
+        mPointPaint.setStyle(Paint.Style.FILL);
 
         float txtSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 12, context.getResources().getDisplayMetrics());
-        hintPaint = new Paint();
-        hintPaint.setAntiAlias(true);
-        hintPaint.setTextSize(txtSize);
-        hintPaint.setStyle(Paint.Style.FILL);
-        hintPaint.setAlpha(100);
-        hintPaint.setStrokeWidth(2);
-        hintPaint.setTextAlign(Paint.Align.CENTER);
-        hintPaint.setColor(hintColor);
+        mHintPaint = new Paint();
+        mHintPaint.setAntiAlias(true);
+        mHintPaint.setTextSize(txtSize);
+        mHintPaint.setStyle(Paint.Style.FILL);
+        mHintPaint.setAlpha(100);
+        mHintPaint.setStrokeWidth(2);
+        mHintPaint.setTextAlign(Paint.Align.CENTER);
+        mHintPaint.setColor(mHintColor);
 
-        linePath = new Path();
+        mLinePath = new Path();
     }
 
     public void setData(List<ChartEntity> list, boolean isCurv) {
@@ -219,9 +214,9 @@ public class LineChartNew extends View {
         this.isCurv = isCurv;
         //计算最大值
         if (list.size() > 0) {
-            maxYValue = list.get(0).getyValue();
-            maxYValue = calculateMax(list);
-            getRange(maxYValue);
+            mMaxYValue = list.get(0).getyValue();
+            mMaxYValue = calculateMax(list);
+            getRange(mMaxYValue);
         }
     }
 
@@ -246,7 +241,7 @@ public class LineChartNew extends View {
      * @return
      */
     private boolean isArriveAtLeftEdge() {
-        return leftMoving <= 0;
+        return mLeftMoving <= 0;
     }
 
     /**
@@ -255,8 +250,9 @@ public class LineChartNew extends View {
      * @return
      */
     private boolean isArriveAtRightEdge() {
-        return leftMoving >= maxRight - minRight;
+        return mLeftMoving >= mMaxRight - mMinRight;
     }
+
     /**
      * 得到柱状图的最大和最小的分度值
      *
@@ -266,21 +262,21 @@ public class LineChartNew extends View {
         int scale = CalculateUtil.getScale(maxValueInItems);//获取这个最大数 数总共有几位
         float unScaleValue = (float) (maxValueInItems / Math.pow(10, scale));//最大值除以位数之后剩下的值  比如1200/1000 后剩下1.2
 
-        maxYDivisionValue = (float) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));//获取Y轴的最大的分度值
-        mStartX = CalculateUtil.getDivisionTextMaxWidth(maxYDivisionValue, mContext) + 20;
+        mMaxYDivisionValue = (float) (CalculateUtil.getRangeTop(unScaleValue) * Math.pow(10, scale));//获取Y轴的最大的分度值
+        mStartX = CalculateUtil.getDivisionTextMaxWidth(mMaxYDivisionValue, mContext) + 20;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mTotalWidth = w - getPaddingLeft() - getPaddingRight();
         mTotalHeight = h - getPaddingTop() - getPaddingBottom();
-        maxHeight = h - getPaddingTop() - getPaddingBottom() - bottomMargin - topMargin;
-        paddingBottom = getPaddingBottom();
-        paddingTop = getPaddingTop();
+        maxHeight = h - getPaddingTop() - getPaddingBottom() - mBottomMargin - mTopMargin;
+        mPaddingBottom = getPaddingBottom();
+        mPaddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
-        paddingRight = getPaddingRight();
-        leftWhiteRect = new Rect(0, 0, 0, mTotalHeight);
-        rightWhiteRect = new Rect(mTotalWidth - leftMargin * 2, 0, mTotalWidth, mTotalHeight);
+        mPaddingRight = getPaddingRight();
+        mLeftWhiteRect = new Rect(0, 0, 0, mTotalHeight);
+        mRightWhiteRect = new Rect(mTotalWidth - mLeftMargin * 2, 0, mTotalWidth, mTotalHeight);
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -293,83 +289,86 @@ public class LineChartNew extends View {
 
     //获取滑动范围和指定区域
     private void getArea() {
-        if(mData!=null){
-            maxRight = (int) (mStartX + space * mData.size());
-            minRight = mTotalWidth - leftMargin - rightMargin;
-            mStartY = mTotalHeight - bottomMargin - paddingBottom;
-            mDrawArea = new RectF(mStartX, paddingTop, mTotalWidth - paddingRight - rightMargin, mTotalHeight - paddingBottom);
-            mHintArea = new RectF(mDrawArea.right - mDrawArea.right / 4, mDrawArea.top + topMargin / 2,
-                    mDrawArea.right, mDrawArea.top + mDrawArea.height() / 4 + topMargin / 2);
+        if (mData != null) {
+            mMaxRight = (int) (mStartX + mSpace * mData.size());
+            mMinRight = mTotalWidth - mLeftMargin - mRightMargin;
+            mStartY = mTotalHeight - mBottomMargin - mPaddingBottom;
+            mDrawArea = new RectF(mStartX, mPaddingTop, mTotalWidth - mPaddingRight - mRightMargin, mTotalHeight - mPaddingBottom);
+            mHintArea = new RectF(mDrawArea.right - mDrawArea.right / 4, mDrawArea.top + mTopMargin / 2,
+                    mDrawArea.right, mDrawArea.top + mDrawArea.height() / 4 + mTopMargin / 2);
         }
     }
+
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        if (mData==null||mData.isEmpty()) return;
-        if (!needEdgeEffect) return;
-        if (!edgeEffectLeft.isFinished()) {
+        if (mData == null || mData.isEmpty()) return;
+        if (!mNeedEdgeEffect) return;
+        if (!mEdgeEffectLeft.isFinished()) {
             canvas.save();
             canvas.rotate(-90);
             canvas.translate(-mStartY, mDrawArea.left);
-            edgeEffectLeft.setSize((int)maxHeight, (int) maxHeight);
-            if (edgeEffectLeft.draw(canvas)) {
+            mEdgeEffectLeft.setSize((int) maxHeight, (int) maxHeight);
+            if (mEdgeEffectLeft.draw(canvas)) {
                 postInvalidate();
             }
             canvas.restore();
         }
 
-        if (!edgeEffectRight.isFinished()) {
+        if (!mEdgeEffectRight.isFinished()) {
             canvas.save();
             canvas.rotate(90);
-            canvas.translate(topMargin, -mDrawArea.right);
-            edgeEffectRight.setSize((int) maxHeight, (int)  maxHeight);
-            if (edgeEffectRight.draw(canvas)) {
+            canvas.translate(mTopMargin, -mDrawArea.right);
+            mEdgeEffectRight.setSize((int) maxHeight, (int) maxHeight);
+            if (mEdgeEffectRight.draw(canvas)) {
                 postInvalidate();
             }
             canvas.restore();
         }
     }
+
     private void endDrag() {
         recycleVelocityTracker();
-        if (edgeEffectLeft != null) {
-            edgeEffectLeft.onRelease();
+        if (mEdgeEffectLeft != null) {
+            mEdgeEffectLeft.onRelease();
         }
-        if(edgeEffectRight!=null){
-            edgeEffectRight.onRelease();
+        if (mEdgeEffectRight != null) {
+            mEdgeEffectRight.onRelease();
         }
     }
-        @Override
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mData == null || mData.isEmpty()) return;
         getArea();
-        linePoints.clear();
+        mLinePoints.clear();
         canvas.drawColor(BG_COLOR);
         //重置线
-        linePath.reset();
-        linePath.incReserve(mData.size());
+        mLinePath.reset();
+        mLinePath.incReserve(mData.size());
         checkTheLeftMoving();
         //画中间的线
         drawWhiteLine(canvas);
         //画左边的Y轴
-        canvas.drawLine(mStartX, mStartY, mStartX, topMargin / 2, axisPaint);
+        canvas.drawLine(mStartX, mStartY, mStartX, mTopMargin / 2, mAxisPaint);
         //左边Y轴的单位
-        canvas.drawText(leftAxisUnit, mStartX, topMargin / 2 - 14, textPaint);
+        canvas.drawText(mLeftAxisUnit, mStartX, mTopMargin / 2 - 14, mTextPaint);
         //画右边的Y轴
-//        canvas.drawLine(mTotalWidth - leftMargin * 2, mStartY, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+//        canvas.drawLine(mTotalWidth - mLeftMargin * 2, mStartY, mTotalWidth - mLeftMargin * 2, mTopMargin / 2, mAxisPaint);
 
         //画X轴 下面的和上面
-        canvas.drawLine(mStartX, mStartY, mTotalWidth - leftMargin * 2, mStartY, axisPaint);
-//        canvas.drawLine(mStartX, topMargin / 2, mTotalWidth - leftMargin * 2, topMargin / 2, axisPaint);
+        canvas.drawLine(mStartX, mStartY, mTotalWidth - mLeftMargin * 2, mStartY, mAxisPaint);
+//        canvas.drawLine(mStartX, mTopMargin / 2, mTotalWidth - mLeftMargin * 2, mTopMargin / 2, mAxisPaint);
 
         //调用clipRect()方法后，只会显示被裁剪的区域
 //        canvas.clipRect(mDrawArea.left, mDrawArea.top, mDrawArea.right, mDrawArea.bottom + mDrawArea.height());
         //画线形图
         drawLines(canvas);
         //画左边和右边的遮罩层
-        leftWhiteRect.right = (int) mStartX;
-        canvas.drawRect(leftWhiteRect, bgPaint);
-        canvas.drawRect(rightWhiteRect, bgPaint);
+        mLeftWhiteRect.right = (int) mStartX;
+        canvas.drawRect(mLeftWhiteRect, mBgPaint);
+        canvas.drawRect(mRightWhiteRect, mBgPaint);
 
         //画左边的Y轴text
         drawLeftYAxis(canvas);
@@ -388,30 +387,30 @@ public class LineChartNew extends View {
         for (int i = 0; i < mData.size(); i++) {
             String text = mData.get(i).getxLabel();
             //当在可见的范围内才绘制
-            if(linePoints.get(i).x>=mStartX - (textPaint.measureText(text)) / 2&&linePoints.get(i).x<(mTotalWidth-leftMargin*2)){
+            if (mLinePoints.get(i).x >= mStartX - (mTextPaint.measureText(text)) / 2 && mLinePoints.get(i).x < (mTotalWidth - mLeftMargin * 2)) {
                 if (text.length() <= 3) {
-                    canvas.drawText(text, linePoints.get(i).x - (textPaint.measureText(text)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
+                    canvas.drawText(text, mLinePoints.get(i).x - (mTextPaint.measureText(text)) / 2, mTotalHeight - mBottomMargin * 2 / 3, mTextPaint);
                 } else {
                     String text1 = text.substring(0, 3);
                     String text2 = text.substring(3, text.length());
-                    canvas.drawText(text1, linePoints.get(i).x - (textPaint.measureText(text1)) / 2, mTotalHeight - bottomMargin * 2 / 3, textPaint);
-                    canvas.drawText(text2, linePoints.get(i).x - (textPaint.measureText(text2)) / 2, mTotalHeight - bottomMargin / 3, textPaint);
+                    canvas.drawText(text1, mLinePoints.get(i).x - (mTextPaint.measureText(text1)) / 2, mTotalHeight - mBottomMargin * 2 / 3, mTextPaint);
+                    canvas.drawText(text2, mLinePoints.get(i).x - (mTextPaint.measureText(text2)) / 2, mTotalHeight - mBottomMargin / 3, mTextPaint);
                 }
             }
         }
     }
 
     private void drawWhiteLine(Canvas canvas) {
-        axisPaint.setColor(Color.parseColor("#EEEEEE"));
+        mAxisPaint.setColor(Color.parseColor("#EEEEEE"));
         float eachHeight = (maxHeight / 5f);
         for (int i = 1; i <= 5; i++) {
             float startY = mStartY - eachHeight * i;
-            if (startY < topMargin / 2) {
+            if (startY < mTopMargin / 2) {
                 break;
             }
-            canvas.drawLine(mStartX, startY, mTotalWidth - leftMargin * 2, startY, axisPaint);
+            canvas.drawLine(mStartX, startY, mTotalWidth - mLeftMargin * 2, startY, mAxisPaint);
         }
-        axisPaint.setColor(Color.BLACK);
+        mAxisPaint.setColor(Color.BLACK);
     }
 
     private float percent = 1f;
@@ -425,7 +424,7 @@ public class LineChartNew extends View {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float percent = (float) animation.getAnimatedValue();
-                linePaint.setPathEffect(new DashPathEffect(new float[]{pathLength, pathLength}, pathLength - pathLength * percent));
+                mLinePaint.setPathEffect(new DashPathEffect(new float[]{pathLength, pathLength}, pathLength - pathLength * percent));
                 invalidate();
             }
         });
@@ -439,29 +438,29 @@ public class LineChartNew extends View {
      */
     private void drawLines(Canvas canvas) {
         float distance = 0;
-//        float lineStart = mStartX + textPaint.measureText(mData.get(0).getxLabel()) / 2 + 20;
+//        float lineStart = mStartX + mTextPaint.measureText(mData.get(0).getxLabel()) / 2 + 20;
         float lineStart = mStartX;
         for (int i = 0; i < mData.size(); i++) {
-            distance = space * i - leftMoving;
-            float lineHeight = mData.get(i).getyValue() * maxHeight / maxYDivisionValue;
+            distance = mSpace * i - mLeftMoving;
+            float lineHeight = mData.get(i).getyValue() * maxHeight / mMaxYDivisionValue;
             if (i == 0) {
-                linePath.moveTo(lineStart + distance, (mStartY - lineHeight) * percent);
+                mLinePath.moveTo(lineStart + distance, (mStartY - lineHeight) * percent);
             } else {
                 if (!isCurv) {
-                    linePath.lineTo(lineStart + distance, (mStartY - lineHeight) * percent);
+                    mLinePath.lineTo(lineStart + distance, (mStartY - lineHeight) * percent);
                 } else {
-                    float lineHeightPre = mData.get(i - 1).getyValue() * maxHeight / maxYDivisionValue;
-                    linePath.cubicTo(lineStart + distance - space / 2, (mStartY - lineHeightPre) * percent,
-                            lineStart + distance - space / 2, (mStartY - lineHeight) * percent,
+                    float lineHeightPre = mData.get(i - 1).getyValue() * maxHeight / mMaxYDivisionValue;
+                    mLinePath.cubicTo(lineStart + distance - mSpace / 2, (mStartY - lineHeightPre) * percent,
+                            lineStart + distance - mSpace / 2, (mStartY - lineHeight) * percent,
                             lineStart + distance, (mStartY - lineHeight) * percent);
                 }
 
             }
-            linePoints.add(new Point((int) (lineStart + distance), (int) (mStartY - lineHeight)));
+            mLinePoints.add(new Point((int) (lineStart + distance), (int) (mStartY - lineHeight)));
         }
-        PathMeasure measure = new PathMeasure(linePath, false);
+        PathMeasure measure = new PathMeasure(mLinePath, false);
         pathLength = measure.getLength();
-        canvas.drawPath(linePath, linePaint);
+        canvas.drawPath(mLinePath, mLinePaint);
     }
 
     /**
@@ -469,10 +468,10 @@ public class LineChartNew extends View {
      */
     private void drawCircles(Canvas canvas) {
         for (int i = 0; i < mData.size(); i++) {
-            pointPaint.setColor(Color.parseColor("#EF6868"));
-//            canvas.drawCircle(linePoints.get(i), (mStartY - mData.get(i).getyValue() * maxHeight / maxYDivisionValue) * percent, RADIUS, pointPaint);
-            if(linePoints.get(i).x>=mStartX&&linePoints.get(i).x<(mTotalWidth-leftMargin*2)){
-                canvas.drawCircle(linePoints.get(i).x, linePoints.get(i).y * percent, RADIUS, pointPaint);
+            mPointPaint.setColor(Color.parseColor("#EF6868"));
+//            canvas.drawCircle(mLinePoints.get(i), (mStartY - mData.get(i).getyValue() * maxHeight / mMaxYDivisionValue) * percent, RADIUS, mPointPaint);
+            if (mLinePoints.get(i).x >= mStartX && mLinePoints.get(i).x < (mTotalWidth - mLeftMargin * 2)) {
+                canvas.drawCircle(mLinePoints.get(i).x, mLinePoints.get(i).y * percent, RADIUS, mPointPaint);
             }
         }
     }
@@ -486,76 +485,76 @@ public class LineChartNew extends View {
      */
     private void drawLeftYAxis(Canvas canvas) {
         float eachHeight = (maxHeight / 5f);
-        if (maxYValue > 1) {
+        if (mMaxYValue > 1) {
             for (int i = 1; i <= 5; i++) {
                 float startY = mStartY - eachHeight * i;
-                if (startY < topMargin / 2) {
+                if (startY < mTopMargin / 2) {
                     break;
                 }
-                BigDecimal maxValue = new BigDecimal(maxYDivisionValue);
+                BigDecimal maxValue = new BigDecimal(mMaxYDivisionValue);
                 BigDecimal fen = new BigDecimal(0.2 * i);
                 String text = null;
                 //因为图表分了5条线，如果能除不进，需要显示小数点不然数据不准确
-                if (maxYDivisionValue % 5 != 0) {
+                if (mMaxYDivisionValue % 5 != 0) {
                     text = String.valueOf(maxValue.multiply(fen).floatValue());
                 } else {
                     text = String.valueOf(maxValue.multiply(fen).longValue());
                 }
-                canvas.drawText(text, mStartX - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0"), mTextPaint);
             }
-        } else if (maxYValue > 0 && maxYValue <= 1) {
+        } else if (mMaxYValue > 0 && mMaxYValue <= 1) {
             for (int i = 1; i <= 5; i++) {
                 float startY = mStartY - eachHeight * i;
-                if (startY < topMargin / 2) {
+                if (startY < mTopMargin / 2) {
                     break;
                 }
-                float textValue = CalculateUtil.numMathMul(maxYDivisionValue, (float) (0.2 * i));
+                float textValue = CalculateUtil.numMathMul(mMaxYDivisionValue, (float) (0.2 * i));
                 String text = String.valueOf(textValue);
-                canvas.drawText(text, mStartX - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0"), mTextPaint);
             }
         } else {
             for (int i = 1; i <= 5; i++) {
                 float startY = mStartY - eachHeight * i;
                 String text = String.valueOf(10 * i);
-                canvas.drawText(text, mStartX - textPaint.measureText(text) - 5, startY + textPaint.measureText("0"), textPaint);
+                canvas.drawText(text, mStartX - mTextPaint.measureText(text) - 5, startY + mTextPaint.measureText("0"), mTextPaint);
             }
         }
     }
 
     private void initOrResetVelocityTracker() {
-        if (velocityTracker == null) {
-            velocityTracker = VelocityTracker.obtain();
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
         } else {
-            velocityTracker.clear();
+            mVelocityTracker.clear();
         }
     }
 
     private void recycleVelocityTracker() {
-        if (velocityTracker != null) {
-            velocityTracker.recycle();
-            velocityTracker = null;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
         }
     }
 
     @Override
     public void computeScroll() {
-        if (scroller.computeScrollOffset()) {
-            movingThisTime = (scroller.getCurrX() - lastPointX);
-            leftMoving = leftMoving + movingThisTime;
-            lastPointX = scroller.getCurrX();
-            if (needEdgeEffect) {
-                if (!hasAbsorbLeft &&isArriveAtLeftEdge()) {
-                    hasAbsorbLeft = true;
-                    edgeEffectLeft.onAbsorb((int) scroller.getCurrVelocity());
-                } else if (!hasAbsorbRight&&isArriveAtRightEdge()) {
-                    hasAbsorbRight = true;
-                    edgeEffectRight.onAbsorb((int) scroller.getCurrVelocity());
+        if (mScroller.computeScrollOffset()) {
+            mMovingThisTime = (mScroller.getCurrX() - mLastPointX);
+            mLeftMoving = mLeftMoving + mMovingThisTime;
+            mLastPointX = mScroller.getCurrX();
+            if (mNeedEdgeEffect) {
+                if (!mHasAbsorbLeft && isArriveAtLeftEdge()) {
+                    mHasAbsorbLeft = true;
+                    mEdgeEffectLeft.onAbsorb((int) mScroller.getCurrVelocity());
+                } else if (!mHasAbsorbRight && isArriveAtRightEdge()) {
+                    mHasAbsorbRight = true;
+                    mEdgeEffectRight.onAbsorb((int) mScroller.getCurrVelocity());
                 }
             }
             postInvalidate();
-        }else {
-            hasAbsorbLeft = false;
-            hasAbsorbRight = false;
+        } else {
+            mHasAbsorbLeft = false;
+            mHasAbsorbRight = false;
         }
     }
 
@@ -563,70 +562,72 @@ public class LineChartNew extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                lastPointX = event.getX();
-                scroller.abortAnimation();//终止动画
+                mLastPointX = event.getX();
+                mScroller.abortAnimation();//终止动画
                 initOrResetVelocityTracker();
-                velocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
+                mVelocityTracker.addMovement(event);//将用户的移动添加到跟踪器中。
                 break;
             case MotionEvent.ACTION_MOVE:
                 float movex = event.getX();
-                movingThisTime = lastPointX - movex;
-                leftMoving = leftMoving + movingThisTime;
-                lastPointX = movex;
+                mMovingThisTime = mLastPointX - movex;
+                mLeftMoving = mLeftMoving + mMovingThisTime;
+                mLastPointX = movex;
                 invalidate();
-                velocityTracker.addMovement(event);
-                if (needEdgeEffect) {
+                mVelocityTracker.addMovement(event);
+                if (mNeedEdgeEffect) {
                     if (isArriveAtLeftEdge()) {
-                        edgeEffectLeft.onPull(Math.abs(mStartX) / mDrawArea.height());
+                        mEdgeEffectLeft.onPull(Math.abs(mStartX) / mDrawArea.height());
                     } else if (isArriveAtRightEdge()) {
-                        edgeEffectRight.onPull(Math.abs(mStartX) / mDrawArea.height());
+                        mEdgeEffectRight.onPull(Math.abs(mStartX) / mDrawArea.height());
                     }
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 clickAction(event);
-                velocityTracker.addMovement(event);
-                velocityTracker.computeCurrentVelocity(1000, maxVelocity);
-                int initialVelocity = (int) velocityTracker.getXVelocity();
-                velocityTracker.clear();
+                mVelocityTracker.addMovement(event);
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
+                int initialVelocity = (int) mVelocityTracker.getXVelocity();
+                mVelocityTracker.clear();
                 if (!isArriveAtLeftEdge() && !isArriveAtRightEdge()) {
-                    scroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
+                    mScroller.fling((int) event.getX(), (int) event.getY(), -initialVelocity / 2,
                             0, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, 0);
                     invalidate();
-                }else {
+                } else {
                     endDrag();
                 }
-                lastPointX = event.getX();
+                mLastPointX = event.getX();
                 break;
             default:
                 return super.onTouchEvent(event);
         }
         return true;
     }
+
     Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-        isDrawHint = false;
-        postInvalidate();
+            isDrawHint = false;
+            postInvalidate();
         }
     };
+
     /**
      * 绘制提示文字
      */
     private void drawHint(Canvas canvas) {
         //竖线
-        canvas.drawLine(linePoints.get(selectIndex).x, mStartY, linePoints.get(selectIndex).x, topMargin / 2, hintPaint);
+        canvas.drawLine(mLinePoints.get(mSelectIndex).x, mStartY, mLinePoints.get(mSelectIndex).x, mTopMargin / 2, mHintPaint);
         //横线
-        canvas.drawLine(mStartX, linePoints.get(selectIndex).y, mTotalWidth - leftMargin * 2, linePoints.get(selectIndex).y, hintPaint);
-        hintPaint.setAlpha(60);
-        canvas.drawRect(mHintArea, hintPaint);
-        hintPaint.setColor(Color.WHITE);
-        canvas.drawText("x : " + mData.get(selectIndex).getxLabel(), mHintArea.centerX(), mHintArea.centerY() - 12, hintPaint);
-        canvas.drawText("y : " + mData.get(selectIndex).getyValue(), mHintArea.centerX(),
-                mHintArea.centerY() + 12 - hintPaint.ascent()-hintPaint.descent(), hintPaint);
-        hintPaint.setColor(hintColor);
-        postDelayed(mRunnable,800);
+        canvas.drawLine(mStartX, mLinePoints.get(mSelectIndex).y, mTotalWidth - mLeftMargin * 2, mLinePoints.get(mSelectIndex).y, mHintPaint);
+        mHintPaint.setAlpha(60);
+        canvas.drawRect(mHintArea, mHintPaint);
+        mHintPaint.setColor(Color.WHITE);
+        canvas.drawText("x : " + mData.get(mSelectIndex).getxLabel(), mHintArea.centerX(), mHintArea.centerY() - 12, mHintPaint);
+        canvas.drawText("y : " + mData.get(mSelectIndex).getyValue(), mHintArea.centerX(),
+                mHintArea.centerY() + 12 - mHintPaint.ascent() - mHintPaint.descent(), mHintPaint);
+        mHintPaint.setColor(mHintColor);
+        postDelayed(mRunnable, 800);
     }
 
     /**
@@ -638,13 +639,13 @@ public class LineChartNew extends View {
         int range = DensityUtil.dip2px(getContext(), 8);
         float eventX = event.getX();
         float eventY = event.getY();
-        for (int i = 0; i < linePoints.size(); i++) {
+        for (int i = 0; i < mLinePoints.size(); i++) {
             //节点
-            int x = linePoints.get(i).x;
-            int y = linePoints.get(i).y;
+            int x = mLinePoints.get(i).x;
+            int y = mLinePoints.get(i).y;
             if (eventX >= x - range && eventX <= x + range &&
                     eventY >= y - range && eventY <= y + range) {//每个节点周围4dp都是可点击区域
-                selectIndex = i;
+                mSelectIndex = i;
                 isDrawHint = true;
                 removeCallbacks(mRunnable);//移除掉上次点击的runnable
                 invalidate();
@@ -657,11 +658,11 @@ public class LineChartNew extends View {
      * 检查向左滑动的距离 确保没有画出屏幕
      */
     private void checkTheLeftMoving() {
-        if (leftMoving > (maxRight - minRight)) {
-            leftMoving = maxRight - minRight;
+        if (mLeftMoving > (mMaxRight - mMinRight)) {
+            mLeftMoving = mMaxRight - mMinRight;
         }
-        if (leftMoving < 0) {
-            leftMoving = 0;
+        if (mLeftMoving < 0) {
+            mLeftMoving = 0;
         }
     }
 
