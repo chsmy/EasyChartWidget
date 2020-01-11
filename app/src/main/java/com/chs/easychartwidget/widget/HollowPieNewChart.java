@@ -227,6 +227,7 @@ public class HollowPieNewChart extends View {
                     }
                 }
                 break;
+                default:
         }
         return super.onTouchEvent(event);
     }

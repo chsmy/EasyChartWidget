@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CirclePercentView">
+        <!--圆弧背景色-->
+        <attr name="circleBgColor" format="reference" />
+        <!--圆弧进度条颜色-->
+        <attr name="circleProgressColor" format="reference" />
+        <!--圆弧宽度-->
+        <attr name="circleRadius" format="integer" />
+        <!--渐变开始颜色-->
+        <attr name="circleStartColor" format="reference" />
+        <!--渐变结束颜色-->
+        <attr name="circleEndColor" format="reference" />
+        <!--是否渐变-->
+        <attr name="circleIsGradient" format="boolean" />
+    </declare-styleable>
+
+</resources>

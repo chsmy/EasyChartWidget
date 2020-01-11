@@ -244,6 +244,7 @@ public class PieChart extends View {
                     }
                 }
                 break;
+                default:
         }
         return super.onTouchEvent(event);
     }

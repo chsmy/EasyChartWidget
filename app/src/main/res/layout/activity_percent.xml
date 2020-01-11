@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <com.chs.easychartwidget.widget.PercentView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp20"
+        android:layout_marginTop="@dimen/dp30"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        />
+
+    <com.chs.easychartwidget.widget.PercentViewTow
+        android:id="@+id/percent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp30"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        />
+    <com.chs.easychartwidget.widget.PercentViewTow
+        android:id="@+id/percent1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp10"
+        android:layout_marginTop="@dimen/dp30"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        />
+    <com.chs.easychartwidget.widget.CirclePercentView
+        android:id="@+id/circle_percent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/dp30"
+        android:layout_gravity="center_horizontal"
+        app:circleBgColor="@color/gray"
+        app:circleIsGradient="true"
+        app:circleProgressColor="@color/blue"/>
+    <com.chs.easychartwidget.widget.CirclePercentView
+        android:id="@+id/circle_percent1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="@dimen/dp30"
+        android:layout_gravity="center_horizontal"
+        app:circleBgColor="@color/gray"
+        app:circleIsGradient="true"
+        app:circleProgressColor="@color/blue"/>
+</LinearLayout>

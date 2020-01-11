@@ -16,6 +16,7 @@ import com.chs.easychartwidget.activity.DoubleBarCharActivity;
 import com.chs.easychartwidget.activity.HollowPieChartActivity;
 import com.chs.easychartwidget.activity.HollowPieChartNewActivity;
 import com.chs.easychartwidget.activity.LineChartActivity;
+import com.chs.easychartwidget.activity.PercentActivity;
 import com.chs.easychartwidget.activity.PieChartActivity;
 import com.chs.easychartwidget.activity.ScaleActivity;
 import com.chs.easychartwidget.entity.MainBean;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         mList.add(new MainBean("直线比例",new Intent(this, ScaleActivity.class)));
         mList.add(new MainBean("组合图",new Intent(this, CombineChartActivity.class)));
         mList.add(new MainBean("线和柱",new Intent(this, BarAndLineActivity.class)));
+        mList.add(new MainBean("比例图",new Intent(this, PercentActivity.class)));
     }
 
     private void setRecyclerView() {

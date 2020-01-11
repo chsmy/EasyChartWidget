@@ -231,8 +231,8 @@ public class BarAndLineChart extends View {
         mDrawArea = new RectF(0, 0, 0, 0);
     }
 
-    public void setData(List<BarChartEntity> list, int[] colors, String mUnitX, String mUnitY, List<List<Float>> mRightDatas, int textType) {
-       this.setData(list,colors,mUnitX,mUnitY,mRightDatas,textType,new int[]{});
+    public void setData(List<BarChartEntity> list, int[] colors, String mUnitX, String mUnitY, List<List<Float>> rightDatas, int textType) {
+       this.setData(list,colors,mUnitX,mUnitY,rightDatas,textType,new int[]{});
     }
     /**
      *
@@ -251,7 +251,7 @@ public class BarAndLineChart extends View {
         this.mUnitY = mUnitY;
         this.mRightDatas = rightDatas;
         this.mRightScale = rightScale;
-        mTextType = textType;
+        this.mTextType = textType;
         if(mRightDatas!=null){
             mRightPaths.clear();
             for (List<Float> rightData : mRightDatas) {

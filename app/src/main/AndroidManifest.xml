@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.BarAndLineActivity"></activity>
+        <activity android:name=".activity.PercentActivity"></activity>
+        <activity android:name=".activity.BarAndLineActivity" />
         <activity android:name=".activity.DoubleBarCharActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
