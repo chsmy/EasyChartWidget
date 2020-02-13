@@ -23,13 +23,8 @@ import java.util.List;
  * 空心的饼状图表
  */
 public class HollowPieChart extends View {
-    /**
-     * 视图的宽和高
-     */
+    public static final int TOUCH_OFFSET = 16;
     private int mTotalWidth, mTotalHeight;
-    /**
-     * 绘制区域的圆的半径
-     */
     private float mOutRadius;
 
     private Paint mPaint, mLinePaint, mTextPaint;
@@ -49,7 +44,7 @@ public class HollowPieChart extends View {
      */
     private float mTotalValue;
     /**
-     * 起始角度的集合
+     * 扇形角度集合
      */
     private float[] angles;
     /**
@@ -122,10 +117,10 @@ public class HollowPieChart extends View {
         mOutRectF.right = mOutRadius;
         mOutRectF.bottom = mOutRadius;
 
-        mRectFTouch.left = -mOutRadius - 16;
-        mRectFTouch.top = -mOutRadius - 16;
-        mRectFTouch.right = mOutRadius + 16;
-        mRectFTouch.bottom = mOutRadius + 16;
+        mRectFTouch.left = -mOutRadius - TOUCH_OFFSET;
+        mRectFTouch.top = -mOutRadius - TOUCH_OFFSET;
+        mRectFTouch.right = mOutRadius + TOUCH_OFFSET;
+        mRectFTouch.bottom = mOutRadius + TOUCH_OFFSET;
     }
 
     @Override

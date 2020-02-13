@@ -28,15 +28,10 @@ import java.util.List;
  * 饼状图表
  */
 public class PieChart extends View {
-    /**
-     * 视图的宽和高
-     */
-    private int mTotalWidth, mTotalHeight;
-    /**
-     * 绘制区域的半径
-     */
-    private float mRadius;
 
+    public static final int TOUCH_OFFSET = 16;
+    private int mTotalWidth, mTotalHeight;
+    private float mRadius;
     private Paint mPaint, mLinePaint, mTextPaint;
 
     private Path mPath;
@@ -54,10 +49,6 @@ public class PieChart extends View {
      * 所有的数据加起来的总值
      */
     private float mTotalValue;
-    /**
-     * 起始角度的集合
-     */
-    private float[] angles;
     /**
      * 手点击的部分的position
      */
@@ -129,10 +120,10 @@ public class PieChart extends View {
         mRectF.right = mRadius;
         mRectF.bottom = mRadius;
 
-        mRectFTouch.left = -mRadius - 16;
-        mRectFTouch.top = -mRadius - 16;
-        mRectFTouch.right = mRadius + 16;
-        mRectFTouch.bottom = mRadius + 16;
+        mRectFTouch.left = -mRadius - TOUCH_OFFSET;
+        mRectFTouch.top = -mRadius - TOUCH_OFFSET;
+        mRectFTouch.right = mRadius + TOUCH_OFFSET;
+        mRectFTouch.bottom = mRadius + TOUCH_OFFSET;
     }
 
     @Override
@@ -206,7 +197,6 @@ public class PieChart extends View {
             float pys = (float) (mRadius * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
             float pxt = (float) ((mRadius + 30) * Math.cos(Math.toRadians(startAngle + sweepAngle / 2)));
             float pyt = (float) ((mRadius + 30) * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
-            angles[i] = startAngle;
             startAngle += sweepAngle + 1;
             //绘制线和文本
             canvas.drawLine(pxs, pys, pxt, pyt, mLinePaint);
@@ -231,7 +221,6 @@ public class PieChart extends View {
         for (PieDataEntity pieData : mDataList) {
             mTotalValue += pieData.getValue();
         }
-        angles = new float[mDataList.size()];
         invalidate();
     }
 
