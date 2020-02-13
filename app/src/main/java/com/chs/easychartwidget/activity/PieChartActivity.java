@@ -37,6 +37,6 @@ public class PieChartActivity extends AppCompatActivity {
                 Toast.makeText(PieChartActivity.this,"点击了"+position,Toast.LENGTH_SHORT).show();
             }
         });
-        pieChart.startAnimation(2000);
+        pieChart.startAnimation(1000);
     }
 }

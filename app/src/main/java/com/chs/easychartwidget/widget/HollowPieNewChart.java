@@ -60,7 +60,11 @@ public class HollowPieNewChart extends View {
      * 点击监听
      */
     private OnItemPieClickListener mOnItemPieClickListener;
-
+    /**
+     * 点击某一块之后再次点击回复原状
+     */
+    private int lastClickedPosition = -1;
+    private boolean lastPositionClicked = false;
     public void setOnItemPieClickListener(OnItemPieClickListener onItemPieClickListener) {
         mOnItemPieClickListener = onItemPieClickListener;
     }
@@ -147,31 +151,35 @@ public class HollowPieNewChart extends View {
             mPaint.setColor(mDataList.get(i).getColor());
             mLinePaint.setColor(mDataList.get(i).getColor());
             mTextPaint.setColor(mDataList.get(i).getColor());
-            if(position-1==i){
-                canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
-            }else {
-                canvas.drawArc(mOutRectF,startAngle,sweepAngle,true,mPaint);
+
+            if (position == i) {
+                if (lastClickedPosition == position && lastPositionClicked) {
+                    canvas.drawArc(mRectFTouch, startAngle, sweepAngle, true, mPaint);
+                } else {
+                    canvas.drawArc(mOutRectF, startAngle, sweepAngle, true, mPaint);
+                }
+            } else {
+                canvas.drawArc(mOutRectF, startAngle, sweepAngle, true, mPaint);
             }
+            angles[i] = sweepAngle;
+//            if(position-1==i){
+//                canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
+//            }else {
+//                canvas.drawArc(mOutRectF,startAngle,sweepAngle,true,mPaint);
+//            }
 //            canvas.drawPath(mPath,mPaint);
             Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
             //确定直线的起始和结束的点的位置
-//            float pxs = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-//            float pys = (float) ((mOutRadius+DensityUtil.dip2px(getContext(),20))*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
-//            float pxt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-//            float pyt = (float) (((mOutRadius+DensityUtil.dip2px(getContext(),20))+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxs = (float) (mOutRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pys = (float) (mOutRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
             float pxt = (float) ((mOutRadius+xOffset)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
             float pyt = (float) ((mOutRadius+xOffset)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
-
-            angles[i] = startAngle;
             startAngle += sweepAngle+1;
             //绘制线和文本
             canvas.drawLine(pxs,pys,pxt,pyt,mLinePaint);
             float res = mDataList.get(i).getValue() / mTotalValue * 100;
             //提供精确的小数位四舍五入处理。
             double resToRound = CalculateUtil.round(res,2);
-            float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
                 canvas.drawLine(pxt,pyt,pxt-xOffset,pyt,mLinePaint);
                 canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%")-xOffset,pyt,mTextPaint);
@@ -203,32 +211,48 @@ public class HollowPieNewChart extends View {
             case MotionEvent.ACTION_DOWN:
                 float x = event.getX()-(mTotalWidth/2);
                 float y = event.getY()-(mTotalHeight/2);
-                float touchAngle = 0;
-                if (x<0&&y<0){  //2 象限
-                    touchAngle += 180;
-                }else if (y<0&&x>0){  //1象限
-                    touchAngle += 360;
-                }else if (y>0&&x<0){  //3象限
-                    touchAngle += 180;
+                //计算出角度
+                float touchAngle = (float) Math.toDegrees(Math.atan2(x,y));
+                if(x>0&&y>0){
+                    touchAngle =90 - touchAngle;
+                }else if(x<0&&y>0){
+                    touchAngle = 90 - touchAngle;
+                }else if(x<0&&y<0){
+                    touchAngle = 90 - touchAngle;
+                }else if(x>0&&y<0){
+                    touchAngle +=180;
                 }
-                //Math.atan(y/x) 返回正数值表示相对于 x 轴的逆时针转角，返回负数值则表示顺时针转角。
-                //返回值乘以 180/π，将弧度转换为角度。
-                touchAngle +=Math.toDegrees(Math.atan(y/x));
-                if (touchAngle<0){
-                    touchAngle = touchAngle+360;
-                }
-                float touchRadius = (float) Math.sqrt(y*y+x*x);
+                float touchRadius = (float) Math.sqrt(y * y + x * x);
                 if (touchRadius< mOutRadius){
                     if(angles!=null)
-                    position = -Arrays.binarySearch(angles,(touchAngle))-1;
+                        position = getClickPosition(touchAngle);
+                    if(lastClickedPosition == position){
+                        lastPositionClicked = !lastPositionClicked;
+                    }else {
+                        lastPositionClicked = true;
+                        lastClickedPosition = position;
+                    }
                     invalidate();
                     if(mOnItemPieClickListener!=null){
-                        mOnItemPieClickListener.onClick(position-1);
+                        mOnItemPieClickListener.onClick(position);
                     }
                 }
                 break;
                 default:
         }
         return super.onTouchEvent(event);
+    }
+
+    private int getClickPosition(float touchAngle) {
+        int position = 0;
+        int totalAngle = 0;
+        for (int i = 0; i < angles.length; i++) {
+            totalAngle += angles[i];
+            if (touchAngle <= totalAngle) {
+                position = i;
+                break;
+            }
+        }
+        return position;
     }
 }

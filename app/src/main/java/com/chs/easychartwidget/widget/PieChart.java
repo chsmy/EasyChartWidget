@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,6 +18,7 @@ import android.view.animation.DecelerateInterpolator;
 import com.chs.easychartwidget.entity.PieDataEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class PieChart extends View {
      */
     private float mRadius;
 
-    private Paint mPaint,mLinePaint,mTextPaint;
+    private Paint mPaint, mLinePaint, mTextPaint;
 
     private Path mPath;
     /**
@@ -64,6 +66,12 @@ public class PieChart extends View {
      * 点击监听
      */
     private OnItemPieClickListener mOnItemPieClickListener;
+    private List<Region> mRegions = new ArrayList<>();
+    /**
+     * 点击某一块之后再次点击回复原状
+     */
+    private int lastClickedPosition = -1;
+    private boolean lastPositionClicked = false;
 
     public void setOnItemPieClickListener(OnItemPieClickListener onItemPieClickListener) {
         mOnItemPieClickListener = onItemPieClickListener;
@@ -72,22 +80,21 @@ public class PieChart extends View {
     public interface OnItemPieClickListener {
         void onClick(int position);
     }
+
     public PieChart(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public PieChart(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, attrs, 0);
     }
 
     public PieChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+        init();
     }
 
-    private void init(Context context) {
+    private void init() {
         mRectF = new RectF();
         mRectFTouch = new RectF();
 
@@ -115,32 +122,34 @@ public class PieChart extends View {
         mTotalWidth = w - getPaddingLeft() - getPaddingRight();
         mTotalHeight = h - getPaddingTop() - getPaddingBottom();
 
-        mRadius = (float) (Math.min(mTotalWidth,mTotalHeight)/2*0.7);
+        mRadius = (float) (Math.min(mTotalWidth, mTotalHeight) / 2 * 0.7);
 
         mRectF.left = -mRadius;
         mRectF.top = -mRadius;
         mRectF.right = mRadius;
         mRectF.bottom = mRadius;
 
-        mRectFTouch.left = -mRadius-16;
-        mRectFTouch.top = -mRadius-16;
-        mRectFTouch.right = mRadius+16;
-        mRectFTouch.bottom = mRadius+16;
+        mRectFTouch.left = -mRadius - 16;
+        mRectFTouch.top = -mRadius - 16;
+        mRectFTouch.right = mRadius + 16;
+        mRectFTouch.bottom = mRadius + 16;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(mDataList==null)
+        if (mDataList == null)
             return;
-        canvas.translate(mTotalWidth/2,mTotalHeight/2);
+        canvas.translate(mTotalWidth / 2, mTotalHeight / 2);
         //绘制饼图的每块区域
         drawPiePath(canvas);
     }
+
     private float percent = 0f;
     private TimeInterpolator pointInterpolator = new DecelerateInterpolator();
-    public void startAnimation(int duration){
-        ValueAnimator mAnimator = ValueAnimator.ofFloat(0,1);
+
+    public void startAnimation(int duration) {
+        ValueAnimator mAnimator = ValueAnimator.ofFloat(0, 1);
         mAnimator.setDuration(duration);
         mAnimator.setInterpolator(pointInterpolator);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -152,64 +161,75 @@ public class PieChart extends View {
         });
         mAnimator.start();
     }
+
     /**
      * 绘制饼图的每块区域 和文本
+     *
      * @param canvas
      */
     private void drawPiePath(Canvas canvas) {
         //起始地角度
         float startAngle = 0;
-        for(int i = 0;i<mDataList.size();i++){
-            float sweepAngle = mDataList.get(i).getValue()/mTotalValue*360-1;//每个扇形的角度
+        mRegions.clear();
+        for (int i = 0; i < mDataList.size(); i++) {
+            float sweepAngle = mDataList.get(i).getValue() / mTotalValue * 360 - 1;//每个扇形的角度
             sweepAngle = sweepAngle * percent;
             mPaint.setColor(mDataList.get(i).getColor());
             mLinePaint.setColor(mDataList.get(i).getColor());
             mTextPaint.setColor(mDataList.get(i).getColor());
             //*******下面的两种方法选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
-//            mPath.moveTo(0,0);
-//            if(position-1==i){
-//                mPath.arcTo(mRectFTouch,startAngle,sweepAngle);
-//            }else {
-//                mPath.arcTo(mRectF,startAngle,sweepAngle);
-//            }
-//            canvas.drawPath(mPath,mPaint);
-//            mPath.reset();
-//            canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
-            if(position-1==i){
-                canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
-            }else {
-                canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
+            mPath.moveTo(0, 0);
+            if (position == i) {
+                if (lastClickedPosition == position && lastPositionClicked) {
+                    mPath.arcTo(mRectFTouch, startAngle, sweepAngle);
+                } else {
+                    mPath.arcTo(mRectF, startAngle, sweepAngle);
+                }
+            } else {
+                mPath.arcTo(mRectF, startAngle, sweepAngle);
             }
-            Log.i("toRadians",(startAngle+sweepAngle/2)+"****"+Math.toRadians(startAngle+sweepAngle/2));
+            RectF r = new RectF();
+            mPath.computeBounds(r, true);
+            Region region = new Region();
+            region.setPath(mPath, new Region((int) r.left, (int) r.top, (int) r.right, (int) r.bottom));
+            mRegions.add(region);
+            canvas.drawPath(mPath, mPaint);
+            mPath.reset();
+//            if(position-1==i){
+//                canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
+//            }else {
+//                canvas.drawArc(mRectF,startAngle,sweepAngle,true,mPaint);
+//            }
+            Log.i("toRadians", (startAngle + sweepAngle / 2) + "****" + Math.toRadians(startAngle + sweepAngle / 2));
             //确定直线的起始和结束的点的位置
-            float pxs = (float) (mRadius*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-            float pys = (float) (mRadius*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
-            float pxt = (float) ((mRadius+30)*Math.cos(Math.toRadians(startAngle+sweepAngle/2)));
-            float pyt = (float) ((mRadius+30)*Math.sin(Math.toRadians(startAngle+sweepAngle/2)));
+            float pxs = (float) (mRadius * Math.cos(Math.toRadians(startAngle + sweepAngle / 2)));
+            float pys = (float) (mRadius * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
+            float pxt = (float) ((mRadius + 30) * Math.cos(Math.toRadians(startAngle + sweepAngle / 2)));
+            float pyt = (float) ((mRadius + 30) * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
             angles[i] = startAngle;
-            startAngle += sweepAngle+1;
+            startAngle += sweepAngle + 1;
             //绘制线和文本
-            canvas.drawLine(pxs,pys,pxt,pyt,mLinePaint);
+            canvas.drawLine(pxs, pys, pxt, pyt, mLinePaint);
             float res = mDataList.get(i).getValue() / mTotalValue * 100;
             //提供精确的小数位四舍五入处理。
-            double resToRound = CalculateUtil.round(res,2);
+            double resToRound = CalculateUtil.round(res, 2);
             float v = startAngle % 360;
             if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {//2 3 象限
-                canvas.drawLine(pxt,pyt,pxt-30,pyt,mLinePaint);
-                canvas.drawText(resToRound+"%",pxt-mTextPaint.measureText(resToRound+"%")-30,pyt,mTextPaint);
-            }else {
-                canvas.drawLine(pxt,pyt,pxt+30,pyt,mLinePaint);
-                canvas.drawText(resToRound+"%",pxt+30,pyt,mTextPaint);
+                canvas.drawLine(pxt, pyt, pxt - 30, pyt, mLinePaint);
+                canvas.drawText(resToRound + "%", pxt - mTextPaint.measureText(resToRound + "%") - 30, pyt, mTextPaint);
+            } else {
+                canvas.drawLine(pxt, pyt, pxt + 30, pyt, mLinePaint);
+                canvas.drawText(resToRound + "%", pxt + 30, pyt, mTextPaint);
             }
         }
 
     }
 
-    public void setDataList(List<PieDataEntity> dataList){
+    public void setDataList(List<PieDataEntity> dataList) {
         this.mDataList = dataList;
         mTotalValue = 0;
-        for(PieDataEntity pieData :mDataList){
-            mTotalValue +=pieData.getValue();
+        for (PieDataEntity pieData : mDataList) {
+            mTotalValue += pieData.getValue();
         }
         angles = new float[mDataList.size()];
         invalidate();
@@ -217,34 +237,29 @@ public class PieChart extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                float x = event.getX()-(mTotalWidth/2);
-                float y = event.getY()-(mTotalHeight/2);
-                float touchAngle = 0;
-                if (x<0&&y<0){  //2 象限
-                    touchAngle += 180;
-                }else if (y<0&&x>0){  //1象限
-                    touchAngle += 360;
-                }else if (y>0&&x<0){  //3象限
-                    touchAngle += 180;
-                }
-                //Math.atan(y/x) 返回正数值表示相对于 x 轴的逆时针转角，返回负数值则表示顺时针转角。
-                //返回值乘以 180/π，将弧度转换为角度。
-                touchAngle +=Math.toDegrees(Math.atan(y/x));
-                if (touchAngle<0){
-                    touchAngle = touchAngle+360;
-                }
-                float touchRadius = (float) Math.sqrt(y*y+x*x);
-                if (touchRadius< mRadius){
-                    position = -Arrays.binarySearch(angles,(touchAngle))-1;
-                    invalidate();
-                    if(mOnItemPieClickListener!=null){
-                        mOnItemPieClickListener.onClick(position-1);
+                float x = event.getX() - (mTotalWidth / 2f);
+                float y = event.getY() - (mTotalHeight / 2f);
+                for (int i = 0; i < mRegions.size(); i++) {
+                    Region region = mRegions.get(i);
+                    if (region.contains((int) x, (int) y)) {
+                        position = i;
+                        break;
                     }
                 }
+                if (lastClickedPosition == position) {
+                    lastPositionClicked = !lastPositionClicked;
+                } else {
+                    lastPositionClicked = true;
+                    lastClickedPosition = position;
+                }
+                invalidate();
+                if (mOnItemPieClickListener != null) {
+                    mOnItemPieClickListener.onClick(position);
+                }
                 break;
-                default:
+            default:
         }
         return super.onTouchEvent(event);
     }
