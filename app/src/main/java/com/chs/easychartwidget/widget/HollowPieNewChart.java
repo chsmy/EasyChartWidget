@@ -23,8 +23,8 @@ import java.util.List;
  * 空心的饼状图表
  */
 public class HollowPieNewChart extends View {
-    public static final int TOUCH_OFFSET = 16;
 
+    public static final int TOUCH_OFFSET = 16;
     private int mTotalWidth, mTotalHeight;
     private float mOutRadius;
 
@@ -200,26 +200,26 @@ public class HollowPieNewChart extends View {
         angles = new float[mDataList.size()];
         invalidate();
     }
-
+    /**
+     * 这里使用角度的方式来确定点击的位置
+     * 在{@link PieChart } 中使Region的方式来判断点击的位置
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                float x = event.getX()-(mTotalWidth/2f);
-                float y = event.getY()-(mTotalHeight/2f);
+                float x = event.getX()-mOutRadius;
+                float y = event.getY()-mOutRadius;
                 //计算出角度
-                float touchAngle = (float) Math.toDegrees(Math.atan2(x,y));
-                if(x>0&&y>0){
-                    touchAngle =90 - touchAngle;
-                }else if(x<0&&y>0){
-                    touchAngle = 90 - touchAngle;
-                }else if(x<0&&y<0){
-                    touchAngle = 90 - touchAngle;
-                }else if(x>0&&y<0){
-                    touchAngle +=180;
+                //Math.atan2  返回从原点（0,0） 到 （x,y）的线与x轴正方向的弧度值
+                //注意Math.atan2的参数是y,x
+                float touchAngle = (float) Math.toDegrees(Math.atan2(y,x));
+                //坐标1,2象限返回-180~0  3,4象限返回0~180
+                if(x<0&&y<0 || x>0&&y<0){//1,2象限
+                    touchAngle = touchAngle + 360 ;
                 }
                 float touchRadius = (float) Math.sqrt(y * y + x * x);
-                if (touchRadius< mOutRadius){
+                if (touchRadius < mOutRadius +TOUCH_OFFSET*2 && touchRadius > mOutRadius * 0.5-TOUCH_OFFSET*2){
                     if(angles!=null)
                         position = getClickPosition(touchAngle);
                     if(lastClickedPosition == position){

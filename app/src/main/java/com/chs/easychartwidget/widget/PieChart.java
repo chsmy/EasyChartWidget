@@ -224,6 +224,10 @@ public class PieChart extends View {
         invalidate();
     }
 
+    /**
+     * 这里使用Region来确定点击的位置
+     * 在{@link HollowPieChart } {@link HollowPieNewChart}中使用角度的方式来判断点击的位置
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
