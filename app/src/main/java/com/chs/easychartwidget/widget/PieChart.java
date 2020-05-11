@@ -7,19 +7,22 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.chs.easychartwidget.R;
 import com.chs.easychartwidget.entity.PieDataEntity;
 import com.chs.easychartwidget.utils.CalculateUtil;
+import com.chs.easychartwidget.utils.DensityUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,10 +32,23 @@ import java.util.List;
  */
 public class PieChart extends View {
 
-    public static final int TOUCH_OFFSET = 16;
+    public final int TOUCH_OFFSET = DensityUtil.dip2px(getContext(), 5);
     private int mTotalWidth, mTotalHeight;
     private float mRadius;
-    private Paint mPaint, mLinePaint, mTextPaint;
+    private float mVerticalLineSize = DensityUtil.dip2px(getContext(), 20);
+    private float mHorizontalLineSize = DensityUtil.dip2px(getContext(), 40);
+    private float mLineOffset = DensityUtil.dip2px(getContext(), 8);
+    private float mTextOffset = DensityUtil.dip2px(getContext(), 3);
+    private Paint mPaint, mLinePaint, mTextPaint,mMiddlePaint;
+    private Rect mTextRect = new Rect();
+    /**
+     * 是否是空心
+     */
+    private boolean isHollow = false;
+    /**
+     * 是否显示中间的文字
+     */
+    private boolean isShowMiddleText = false;
 
     private Path mPath;
     /**
@@ -85,6 +101,14 @@ public class PieChart extends View {
         init();
     }
 
+    public void setHollow(boolean hollow) {
+        isHollow = hollow;
+    }
+
+    public void setShowMiddleText(boolean showMiddleText) {
+        isShowMiddleText = showMiddleText;
+    }
+
     private void init() {
         mRectF = new RectF();
         mRectFTouch = new RectF();
@@ -102,7 +126,12 @@ public class PieChart extends View {
         mTextPaint = new Paint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setStyle(Paint.Style.FILL);
-        mTextPaint.setTextSize(24);
+        mTextPaint.setTextSize(DensityUtil.dip2px(getContext(),8));
+
+        mMiddlePaint = new Paint();
+        mMiddlePaint.setAntiAlias(true);
+        mMiddlePaint.setStyle(Paint.Style.FILL);
+        mMiddlePaint.setTextSize(24);
 
         mPath = new Path();
     }
@@ -131,7 +160,7 @@ public class PieChart extends View {
         super.onDraw(canvas);
         if (mDataList == null)
             return;
-        canvas.translate(mTotalWidth / 2, mTotalHeight / 2);
+        canvas.translate(mTotalWidth >> 1, mTotalHeight >> 1);
         //绘制饼图的每块区域
         drawPiePath(canvas);
     }
@@ -163,12 +192,14 @@ public class PieChart extends View {
         float startAngle = 0;
         mRegions.clear();
         for (int i = 0; i < mDataList.size(); i++) {
-            float sweepAngle = mDataList.get(i).getValue() / mTotalValue * 360 - 1;//每个扇形的角度
+            //每个扇形的角度
+            float sweepAngle = mDataList.get(i).getValue() / mTotalValue * 360 - 1;
             sweepAngle = sweepAngle * percent;
             mPaint.setColor(mDataList.get(i).getColor());
             mLinePaint.setColor(mDataList.get(i).getColor());
             mTextPaint.setColor(mDataList.get(i).getColor());
             //*******下面的两种方法选其一就可以 一个是通过画路径来实现 一个是直接绘制扇形***********
+            //第一种 绘制path
             mPath.moveTo(0, 0);
             if (position == i) {
                 if (lastClickedPosition == position && lastPositionClicked) {
@@ -186,6 +217,7 @@ public class PieChart extends View {
             mRegions.add(region);
             canvas.drawPath(mPath, mPaint);
             mPath.reset();
+            //第二种绘制扇形
 //            if(position-1==i){
 //                canvas.drawArc(mRectFTouch,startAngle,sweepAngle,true,mPaint);
 //            }else {
@@ -193,26 +225,68 @@ public class PieChart extends View {
 //            }
             Log.i("toRadians", (startAngle + sweepAngle / 2) + "****" + Math.toRadians(startAngle + sweepAngle / 2));
             //确定直线的起始和结束的点的位置
-            float pxs = (float) (mRadius * Math.cos(Math.toRadians(startAngle + sweepAngle / 2)));
-            float pys = (float) (mRadius * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
-            float pxt = (float) ((mRadius + 30) * Math.cos(Math.toRadians(startAngle + sweepAngle / 2)));
-            float pyt = (float) ((mRadius + 30) * Math.sin(Math.toRadians(startAngle + sweepAngle / 2)));
+            float pxs = ((mRadius + mLineOffset) * mathCos(startAngle + sweepAngle / 2));
+            float pys = ((mRadius + mLineOffset) * mathSin(startAngle + sweepAngle / 2));
+            float pxe = ((mRadius + mVerticalLineSize) * mathCos(startAngle + sweepAngle / 2));
+            float pye = ((mRadius + mVerticalLineSize) * mathSin(startAngle + sweepAngle / 2));
             startAngle += sweepAngle + 1;
-            //绘制线和文本
-            canvas.drawLine(pxs, pys, pxt, pyt, mLinePaint);
+
+            canvas.drawCircle(pxs, pys, DensityUtil.dip2px(getContext(), 2), mLinePaint);
+            canvas.drawLine(pxs, pys, pxe, pye, mLinePaint);
+
             float res = mDataList.get(i).getValue() / mTotalValue * 100;
+            String name = mDataList.get(i).getName();
             //提供精确的小数位四舍五入处理。
             double resToRound = CalculateUtil.round(res, 2);
-            float v = startAngle % 360;
-            if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {//2 3 象限
-                canvas.drawLine(pxt, pyt, pxt - 30, pyt, mLinePaint);
-                canvas.drawText(resToRound + "%", pxt - mTextPaint.measureText(resToRound + "%") - 30, pyt, mTextPaint);
+            //2 3 象限
+            if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
+                canvas.drawLine(pxe, pye, pxe - mHorizontalLineSize, pye, mLinePaint);
+                canvas.drawText(resToRound + "%", pxe - mTextPaint.measureText(resToRound + "%"),
+                        pye + mTextOffset + getTextHeight(String.valueOf(resToRound)), mTextPaint);
+                canvas.drawText(name, pxe - mTextPaint.measureText(name),
+                        pye + mTextOffset - getTextHeight(String.valueOf(resToRound)), mTextPaint);
             } else {
-                canvas.drawLine(pxt, pyt, pxt + 30, pyt, mLinePaint);
-                canvas.drawText(resToRound + "%", pxt + 30, pyt, mTextPaint);
+                canvas.drawLine(pxe, pye, pxe + mHorizontalLineSize, pye, mLinePaint);
+                canvas.drawText(resToRound + "%", pxe + (mHorizontalLineSize / 2 - mTextPaint.measureText(resToRound + "%") / 2),
+                        pye + mTextOffset + getTextHeight(String.valueOf(resToRound)), mTextPaint);
+                canvas.drawText(name, pxe + (mHorizontalLineSize / 2 - mTextPaint.measureText(name) / 2),
+                        pye + mTextOffset - getTextHeight(String.valueOf(resToRound)), mTextPaint);
             }
         }
 
+        if (isHollow) {
+            drawHollow(canvas);
+        }
+
+    }
+
+    private void drawHollow(Canvas canvas) {
+        mPaint.setColor(Color.WHITE);
+        mPaint.setAlpha(50);
+        canvas.drawCircle(0, 0, mRadius / 5 * 3 + DensityUtil.dip2px(getContext(), 5), mPaint);
+        mPaint.setAlpha(255);
+        canvas.drawCircle(0, 0, mRadius / 5 * 3, mPaint);
+        if(isShowMiddleText){
+            mMiddlePaint.setTextSize(DensityUtil.dip2px(getContext(),16));
+            mMiddlePaint.setColor(ContextCompat.getColor(getContext(), R.color.black));
+            canvas.drawText(String.valueOf((int) mTotalValue), 0 - mMiddlePaint.measureText(String.valueOf((int) mTotalValue))/2, 0, mMiddlePaint);
+            mMiddlePaint.setTextSize(DensityUtil.dip2px(getContext(),12));
+            mMiddlePaint.setColor(ContextCompat.getColor(getContext(), R.color.gray));
+            canvas.drawText("工单数量", 0 - mMiddlePaint.measureText("工单数量")/2,  DensityUtil.dip2px(getContext(),16), mMiddlePaint);
+        }
+    }
+
+    private float getTextHeight(String text) {
+        mTextPaint.getTextBounds(text, 0, text.length(), mTextRect);
+        return mTextRect.height();
+    }
+
+    private float mathCos(double angdeg) {
+        return (float) Math.cos(Math.toRadians(angdeg));
+    }
+
+    private float mathSin(double angdeg) {
+        return (float) Math.sin(Math.toRadians(angdeg));
     }
 
     public void setDataList(List<PieDataEntity> dataList) {

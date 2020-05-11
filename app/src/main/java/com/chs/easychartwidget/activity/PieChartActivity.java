@@ -23,7 +23,9 @@ public class PieChartActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pie_chart);
-        PieChart pieChart = (PieChart) findViewById(R.id.chart);
+        PieChart pieChart =  findViewById(R.id.chart);
+        PieChart pieChart1 =  findViewById(R.id.chart1);
+
         List<PieDataEntity> dataEntities = new ArrayList<>();
         for(int i = 0;i<9;i++){
             PieDataEntity entity = new PieDataEntity("name"+i,i+1,mColors[i]);
@@ -38,5 +40,19 @@ public class PieChartActivity extends AppCompatActivity {
             }
         });
         pieChart.startAnimation(1000);
+
+
+
+
+        pieChart1.setHollow(true);
+        pieChart1.setShowMiddleText(true);
+        pieChart1.setDataList(dataEntities);
+        pieChart1.setOnItemPieClickListener(new PieChart.OnItemPieClickListener() {
+            @Override
+            public void onClick(int position) {
+                Toast.makeText(PieChartActivity.this,"点击了"+position,Toast.LENGTH_SHORT).show();
+            }
+        });
+        pieChart1.startAnimation(1000);
     }
 }
