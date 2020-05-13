@@ -238,18 +238,25 @@ public class PieChart extends View {
             String name = mDataList.get(i).getName();
             //提供精确的小数位四舍五入处理。
             double resToRound = CalculateUtil.round(res, 2);
+
+            float eachMiddleAngle = (float) Math.toDegrees(Math.atan2(pys,pxs));
+            //坐标1,2象限返回-180~0  3,4象限返回0~180
+            if(pxs<0&&pys<0 || pxs>0&&pys<0){//1,2象限
+                eachMiddleAngle = eachMiddleAngle + 360 ;
+            }
+
             //2 3 象限
-            if (startAngle % 360.0 >= 90.0 && startAngle % 360.0 <= 270.0) {
+            if (eachMiddleAngle % 360.0 >= 90.0 && eachMiddleAngle % 360.0 <= 270.0) {
                 canvas.drawLine(pxe, pye, pxe - mHorizontalLineSize, pye, mLinePaint);
-                canvas.drawText(resToRound + "%", pxe - mTextPaint.measureText(resToRound + "%"),
+                canvas.drawText(resToRound + "%", pxe - mHorizontalLineSize,
                         pye + mTextOffset + getTextHeight(String.valueOf(resToRound)), mTextPaint);
-                canvas.drawText(name, pxe - mTextPaint.measureText(name),
+                canvas.drawText(name, pxe - mHorizontalLineSize,
                         pye + mTextOffset - getTextHeight(String.valueOf(resToRound)), mTextPaint);
             } else {
                 canvas.drawLine(pxe, pye, pxe + mHorizontalLineSize, pye, mLinePaint);
-                canvas.drawText(resToRound + "%", pxe + (mHorizontalLineSize / 2 - mTextPaint.measureText(resToRound + "%") / 2),
+                canvas.drawText(resToRound + "%", pxe + mHorizontalLineSize  - mTextPaint.measureText(resToRound + "%"),
                         pye + mTextOffset + getTextHeight(String.valueOf(resToRound)), mTextPaint);
-                canvas.drawText(name, pxe + (mHorizontalLineSize / 2 - mTextPaint.measureText(name) / 2),
+                canvas.drawText(name, pxe + mHorizontalLineSize  - mTextPaint.measureText(name),
                         pye + mTextOffset - getTextHeight(String.valueOf(resToRound)), mTextPaint);
             }
         }
